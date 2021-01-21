@@ -140,7 +140,9 @@ class Toolbar extends Module {
           (formats[format] != null &&
             formats[format].toString() === input.getAttribute('value')) ||
           (formats[format] == null && !input.getAttribute('value')) ||
-          (format === 'list' && formats[format] && formats[format][format] === input.getAttribute('value'));
+          !!(format === 'list' && formats['list'] && formats['list']['list'] === input.getAttribute('value'));
+        console.log(`${format} is active: ${isActive}`);
+        console.log(formats);
         input.classList.toggle('ql-active', isActive);
       } else {
         input.classList.toggle('ql-active', formats[format] != null);
