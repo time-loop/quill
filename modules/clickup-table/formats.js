@@ -967,14 +967,6 @@ class ListItem extends Block {
     const curFormats = ListItem.formats(this.domNode)
     const { row, cell, rowspan, colspan } = curFormats
 
-    // show toggled children before indent change
-    if (
-      name === 'indent' &&
-      this.isToggleListItem()
-    ) {
-      this.expandItem();
-    }
-
     if (name === ListItem.blotName) {
       if (value) {
         if (typeof value === 'object') {
