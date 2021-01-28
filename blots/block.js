@@ -20,24 +20,6 @@ class Block extends BlockBlot {
   constructor(scroll, domNode) {
     super(scroll, domNode);
     this.cache = {};
-
-    setTimeout(() => {
-      if (scroll.domNode) {
-        const quill = Quill.find(scroll.domNode.parentNode);
-        const thisIndex = quill.getIndex(this);
-        if (quill && thisIndex >= 0) {
-          const formats = quill.getFormat(thisIndex, this.length());
-          if (!formats || !formats[BlockIdentityAttribute.attrName]) {
-            quill.formatLine(
-              thisIndex,
-              this.length(),
-              BlockIdentityAttribute.attrName,
-              `block-${uuid()}`
-            );
-          }
-        }
-      }  
-    }, 0);
   }
 
   delta() {
@@ -118,6 +100,10 @@ class Block extends BlockBlot {
   optimize(context) {
     super.optimize(context);
     this.cache = {};
+    const curFormats = this.formats();
+    if (!curFormats || !curFormats[BlockIdentityAttribute.attrName]) {
+      this.format(BlockIdentityAttribute.attrName, `block-${uuid()}`);
+    }
   }
 
   path(index) {
