@@ -108,7 +108,7 @@ Quill.register(
     'formats/video': Video,
 
     'modules/syntax': Syntax,
-    // 'modules/table': Table,
+    'modules/table': Table,
     'modules/toolbar': Toolbar,
     'modules/dragDropBlocks': DragDropBlocks,
     'modules/storage': Storage,

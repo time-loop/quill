@@ -199,9 +199,12 @@ class Keyboard extends Module {
     const [prev] = this.quill.getLine(range.index - 1);
 
     if (context.offset === 0 && prev != null) {
-      if (isTheLineInATableCell(prev) &&
-        !isTheLineInATableCell(line)
-      ) return false
+      if ((isTheLineInATableCell(prev) &&
+        !isTheLineInATableCell(line)) ||
+        isTableCol(line)
+      ) {
+        return false;
+      }
     }
 
     // Check for astral symbols
@@ -1031,6 +1034,10 @@ function isTheLineInATableCell (line) {
   return !!formats &&
     formats[key] &&
     !!formats[key].cell
+}
+
+function isTableCol (line) {
+  return line.statics.blotName === 'table-col';
 }
 
 export { Keyboard as default, SHORTKEY, normalize };
