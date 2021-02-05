@@ -934,7 +934,15 @@ function makeTableArrowHandler(up) {
           const curTableView = curCell.table().parent
           const curTableViewStartIndex = this.quill.getIndex(curTableView)
           if (up) {
-            this.quill.setSelection(curTableViewStartIndex - 1, 0, Quill.sources.USER)
+            if (curTableViewStartIndex === 0) {
+              this.quill.updateContents(
+                new Delta().insert('\n'),
+                Quill.sources.USER,
+              );
+              this.quill.setSelection(curTableViewStartIndex, 0, Quill.sources.USER);
+            } else {
+              this.quill.setSelection(curTableViewStartIndex - 1, 0, Quill.sources.USER);
+            }
           } else {
             this.quill.setSelection(curTableViewStartIndex + curTableView.length(), 0, Quill.sources.USER)
           }
@@ -985,7 +993,15 @@ function makeTableListArrowHandler(up) {
           const curTableView = curCell.table().parent
           const curTableViewStartIndex = this.quill.getIndex(curTableView)
           if (up) {
-            this.quill.setSelection(curTableViewStartIndex - 1, 0, Quill.sources.USER)
+            if (curTableViewStartIndex === 0) {
+              this.quill.updateContents(
+                new Delta().insert('\n'),
+                Quill.sources.USER,
+              );
+              this.quill.setSelection(curTableViewStartIndex, 0, Quill.sources.USER);
+            } else {
+              this.quill.setSelection(curTableViewStartIndex - 1, 0, Quill.sources.USER);
+            }
           } else {
             this.quill.setSelection(curTableViewStartIndex + curTableView.length(), 0, Quill.sources.USER)
           }
