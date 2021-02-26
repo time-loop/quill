@@ -72,23 +72,21 @@ class Selection {
       this.root.classList.add('ql-compositing');
     });
     this.root.addEventListener('compositionend', () => {
-      setTimeout(() => {
-        this.scroll.batchEnd();
-        this.root.classList.remove('ql-compositing');
-        this.composing = false;
-        if (this.cursor.parent) {
-          const range = this.cursor.restore();
-          if (!range) return;
-          setTimeout(() => {
-            this.setNativeRange(
-              range.startNode,
-              range.startOffset,
-              range.endNode,
-              range.endOffset,
-            );
-          }, 1);
-        }
-      }, 0);
+      this.scroll.batchEnd();
+      this.root.classList.remove('ql-compositing');
+      this.composing = false;
+      if (this.cursor.parent) {
+        const range = this.cursor.restore();
+        if (!range) return;
+        setTimeout(() => {
+          this.setNativeRange(
+            range.startNode,
+            range.startOffset,
+            range.endNode,
+            range.endOffset,
+          );
+        }, 1);
+      }
     });
   }
 
