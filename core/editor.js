@@ -7,6 +7,7 @@ import { Range } from './selection';
 import CursorBlot from '../blots/cursor';
 import Block, { BlockEmbed, bubbleFormats } from '../blots/block';
 import Break from '../blots/break';
+import Header from '../formats/header';
 import TextBlot, { escapeText } from '../blots/text';
 
 const ASCII = /^[ -~]*$/;
@@ -139,7 +140,7 @@ class Editor {
   getHTML(index, length) {
     const [line, lineOffset] = this.scroll.line(index);
     if (line.length() >= lineOffset + length) {
-      return convertHTML(line, lineOffset, length, true);
+      return convertHTML(line, lineOffset, length, !(line instanceof Header));
     }
     return convertHTML(this.scroll, index, length, true);
   }
@@ -246,11 +247,11 @@ function convertListHTML(items, lastIndent, types) {
     types.push(type);
     if (indent === lastIndent + 1) {
       if (child.statics.blotName === 'list-block-wrapper') {
-        return `<${tag}>${convertHTML(
-          child,
-          offset,
-          length,
-        )}${convertListHTML(rest, indent, types)}`;
+        return `<${tag}>${convertHTML(child, offset, length)}${convertListHTML(
+          rest,
+          indent,
+          types,
+        )}`;
       } else {
         return `<${tag}><li${attribute}>${convertHTML(
           child,
@@ -332,9 +333,7 @@ function combineFormats(formats, combined) {
 
 function getListType(type) {
   // clickup: Since the data structure of List changed.
-  type = typeof type === 'string'
-    ? type
-    : type.list
+  type = typeof type === 'string' ? type : type.list;
 
   const tag = type === 'ordered' ? 'ol' : 'ul';
   switch (type) {
