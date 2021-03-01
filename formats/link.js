@@ -24,7 +24,7 @@ class Link extends Inline {
       if (value) {
         this.domNode.setAttribute('href', this.constructor.sanitize(value));
       } else {
-        this.format('void-detect', 'true')
+        this.format('void-detect', 'true');
         super.format(name, value);
       }
     }

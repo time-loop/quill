@@ -1,5 +1,5 @@
-import Quill from '../../core/quill';
 import Delta from 'quill-delta';
+import Quill from '../../core/quill';
 import { css } from '../clickup-table-control/utils';
 
 const Block = Quill.import('blots/block');
@@ -35,13 +35,15 @@ class TableCellLine extends Block {
     const node = super.create(value);
 
     CELL_IDENTITY_KEYS.forEach(key => {
-      const identityMaker = key === 'row'
-        ? rowId : cellId
+      const identityMaker = key === 'row' ? rowId : cellId;
       node.setAttribute(`data-${key}`, value[key] || identityMaker());
-    })
+    });
 
     CELL_ATTRIBUTES.forEach(attrName => {
-      node.setAttribute(`data-${attrName}`, value[attrName] || CELL_DEFAULT[attrName]);
+      node.setAttribute(
+        `data-${attrName}`,
+        value[attrName] || CELL_DEFAULT[attrName],
+      );
     });
 
     return node;
@@ -50,12 +52,16 @@ class TableCellLine extends Block {
   static formats(domNode) {
     const formats = {};
 
-    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).reduce((result, attribute) => {
-      if (domNode.hasAttribute(`data-${attribute}`)) {
-        result[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined;
-      }
-      return result;
-    }, formats);
+    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).reduce(
+      (result, attribute) => {
+        if (domNode.hasAttribute(`data-${attribute}`)) {
+          result[attribute] =
+            domNode.getAttribute(`data-${attribute}`) || undefined;
+        }
+        return result;
+      },
+      formats,
+    );
   }
 
   format(name, value) {
@@ -105,8 +111,10 @@ class TableCellLine extends Block {
     const rowId = this.domNode.getAttribute('data-row');
     const rowspan = this.domNode.getAttribute('data-rowspan');
     const colspan = this.domNode.getAttribute('data-colspan');
-    if (this.statics.requiredContainer &&
-        !(this.parent instanceof this.statics.requiredContainer)) {
+    if (
+      this.statics.requiredContainer &&
+      !(this.parent instanceof this.statics.requiredContainer)
+    ) {
       this.wrap(this.statics.requiredContainer.blotName, {
         cell: cellId,
         row: rowId,
@@ -121,9 +129,9 @@ class TableCellLine extends Block {
     return this.parent;
   }
 }
-TableCellLine.blotName = "table-cell-line";
-TableCellLine.className = "qlbt-cell-line";
-TableCellLine.tagName = "DIV";
+TableCellLine.blotName = 'table-cell-line';
+TableCellLine.className = 'qlbt-cell-line';
+TableCellLine.tagName = 'DIV';
 
 class TableCell extends Container {
   checkMerge() {
@@ -132,14 +140,20 @@ class TableCell extends Container {
       this.next.children.head != null &&
       typeof this.next.children.head.formats === 'function'
     ) {
-      const thisHead = this.children.head.formats()[this.children.head.statics.blotName] ||
+      const thisHead =
+        this.children.head.formats()[this.children.head.statics.blotName] ||
         this.children.head.formats();
-      const thisTail = this.children.tail.formats()[this.children.tail.statics.blotName] ||
+      const thisTail =
+        this.children.tail.formats()[this.children.tail.statics.blotName] ||
         this.children.tail.formats();
-      const nextHead = this.next.children.head.formats()[this.next.children.head.statics.blotName] ||
-        this.next.children.head.formats();
-      const nextTail = this.next.children.tail.formats()[this.next.children.tail.statics.blotName] ||
-        this.next.children.tail.formats();
+      const nextHead =
+        this.next.children.head.formats()[
+          this.next.children.head.statics.blotName
+        ] || this.next.children.head.formats();
+      const nextTail =
+        this.next.children.tail.formats()[
+          this.next.children.tail.statics.blotName
+        ] || this.next.children.tail.formats();
 
       return (
         thisHead.cell === thisTail.cell &&
@@ -152,8 +166,8 @@ class TableCell extends Container {
 
   static create(value) {
     const node = super.create(value);
-    node.setAttribute("data-row", value.row);
-    node.setAttribute("data-cell", value.cell);
+    node.setAttribute('data-row', value.row);
+    node.setAttribute('data-cell', value.cell);
 
     CELL_ATTRIBUTES.forEach(attrName => {
       if (value[attrName]) {
@@ -167,12 +181,12 @@ class TableCell extends Container {
   static formats(domNode) {
     const formats = {};
 
-    if (domNode.hasAttribute("data-row")) {
-      formats["row"] = domNode.getAttribute("data-row");
+    if (domNode.hasAttribute('data-row')) {
+      formats['row'] = domNode.getAttribute('data-row');
     }
 
-    if (domNode.hasAttribute("data-cell")) {
-      formats["cell"] = domNode.getAttribute("data-cell");
+    if (domNode.hasAttribute('data-cell')) {
+      formats['cell'] = domNode.getAttribute('data-cell');
     }
 
     return CELL_ATTRIBUTES.reduce((result, attribute) => {
@@ -194,12 +208,12 @@ class TableCell extends Container {
   formats() {
     const formats = {};
 
-    if (this.domNode.hasAttribute("data-row")) {
-      formats["row"] = this.domNode.getAttribute("data-row");
+    if (this.domNode.hasAttribute('data-row')) {
+      formats['row'] = this.domNode.getAttribute('data-row');
     }
 
-    if (this.domNode.hasAttribute("data-cell")) {
-      formats["cell"] = this.domNode.getAttribute("data-cell");
+    if (this.domNode.hasAttribute('data-cell')) {
+      formats['cell'] = this.domNode.getAttribute('data-cell');
     }
 
     return CELL_ATTRIBUTES.reduce((result, attribute) => {
@@ -238,18 +252,25 @@ class TableCell extends Container {
   }
 
   optimize(context) {
-    const rowId = this.domNode.getAttribute("data-row");
-    const cellId = this.domNode.getAttribute("data-cell");
+    const rowId = this.domNode.getAttribute('data-row');
+    const cellId = this.domNode.getAttribute('data-cell');
 
-    if (this.statics.requiredContainer &&
-      !(this.parent instanceof this.statics.requiredContainer)) {
+    if (
+      this.statics.requiredContainer &&
+      !(this.parent instanceof this.statics.requiredContainer)
+    ) {
       this.wrap(this.statics.requiredContainer.blotName, {
         row: rowId,
       });
     } else if (
       this.statics.requiredContainer &&
       this.parent instanceof this.statics.requiredContainer &&
-      this.children.map(child => child).every(item => item instanceof ListContainer || item instanceof TableCellLine)
+      this.children
+        .map(child => child)
+        .every(
+          item =>
+            item instanceof ListContainer || item instanceof TableCellLine,
+        )
     ) {
       const hasChildInOtherCell = this.children
         .map(child => {
@@ -283,16 +304,22 @@ class TableCell extends Container {
     return this.row() && this.row().table();
   }
 }
-TableCell.blotName = "table";
-TableCell.tagName = "TD";
+TableCell.blotName = 'table';
+TableCell.tagName = 'TD';
 
 class TableRow extends Container {
   checkMerge() {
     if (super.checkMerge() && this.next.children.head != null) {
-      const thisHead = this.children.head instanceof TableCell && this.children.head.formats();
-      const thisTail = this.children.tail instanceof TableCell && this.children.tail.formats();
-      const nextHead = this.next.children.head instanceof TableCell && this.next.children.head.formats();
-      const nextTail = this.next.children.tail instanceof TableCell && this.next.children.tail.formats();
+      const thisHead =
+        this.children.head instanceof TableCell && this.children.head.formats();
+      const thisTail =
+        this.children.tail instanceof TableCell && this.children.tail.formats();
+      const nextHead =
+        this.next.children.head instanceof TableCell &&
+        this.next.children.head.formats();
+      const nextTail =
+        this.next.children.tail instanceof TableCell &&
+        this.next.children.tail.formats();
 
       return (
         thisHead &&
@@ -309,21 +336,21 @@ class TableRow extends Container {
 
   static create(value) {
     const node = super.create(value);
-    node.setAttribute("data-row", value.row);
+    node.setAttribute('data-row', value.row);
     return node;
   }
 
   formats() {
-    return ["row"].reduce((formats, attrName) => {
+    return ['row'].reduce((formats, attrName) => {
       if (this.domNode.hasAttribute(`data-${attrName}`)) {
         formats[attrName] = this.domNode.getAttribute(`data-${attrName}`);
       }
       return formats;
-    }, {})
+    }, {});
   }
 
   optimize(context) {
-    const rowId = this.domNode.getAttribute('data-row');
+    const curRowId = this.domNode.getAttribute('data-row');
     // optimize function of ShadowBlot
     if (
       this.statics.requiredContainer &&
@@ -339,7 +366,7 @@ class TableRow extends Container {
         .map(child => {
           const childFormats = child.formats();
           if (child instanceof TableCell) {
-            return rowId === childFormats.row;
+            return curRowId === childFormats.row;
           }
           return true;
         })
@@ -363,8 +390,8 @@ class TableRow extends Container {
     return this.parent && this.parent.parent;
   }
 }
-TableRow.blotName = "table-row";
-TableRow.tagName = "TR";
+TableRow.blotName = 'table-row';
+TableRow.tagName = 'TR';
 
 class TableBody extends Container {
   optimize(context) {
@@ -372,14 +399,17 @@ class TableBody extends Container {
     super.optimize(context);
   }
 }
-TableBody.blotName = "table-body";
-TableBody.tagName = "TBODY";
+TableBody.blotName = 'table-body';
+TableBody.tagName = 'TBODY';
 
 class TableCol extends Block {
   static create(value) {
-    let node = super.create(value);
+    const node = super.create(value);
     COL_ATTRIBUTES.forEach(attrName => {
-      node.setAttribute(`${attrName}`, value[attrName] || COL_DEFAULT[attrName]);
+      node.setAttribute(
+        `${attrName}`,
+        value[attrName] || COL_DEFAULT[attrName],
+      );
     });
     return node;
   }
@@ -387,8 +417,7 @@ class TableCol extends Block {
   static formats(domNode) {
     return COL_ATTRIBUTES.reduce((formats, attribute) => {
       if (domNode.hasAttribute(`${attribute}`)) {
-        formats[attribute] =
-          domNode.getAttribute(`${attribute}`) || undefined;
+        formats[attribute] = domNode.getAttribute(`${attribute}`) || undefined;
       }
       return formats;
     }, {});
@@ -397,10 +426,7 @@ class TableCol extends Block {
   format(name, value) {
     if (COL_ATTRIBUTES.indexOf(name) > -1) {
       this.domNode.setAttribute(`${name}`, value || COL_DEFAULT[name]);
-    } else if (
-      name === TableCol.blotName ||
-      name === TableCellLine.blotName
-    ) {
+    } else if (name === TableCol.blotName || name === TableCellLine.blotName) {
       super.format(name, value);
     }
   }
@@ -409,16 +435,16 @@ class TableCol extends Block {
     return this.domNode.outerHTML;
   }
 }
-TableCol.blotName = "table-col";
-TableCol.tagName = "col";
+TableCol.blotName = 'table-col';
+TableCol.tagName = 'col';
 
 class TableColGroup extends Container {}
-TableColGroup.blotName = "table-col-group";
-TableColGroup.tagName = "colgroup";
+TableColGroup.blotName = 'table-col-group';
+TableColGroup.tagName = 'colgroup';
 
 class TableContainer extends Container {
   static create() {
-    let node = super.create();
+    const node = super.create();
     return node;
   }
 
@@ -462,6 +488,7 @@ class TableContainer extends Container {
     setTimeout(() => {
       this.updateTableWidth();
     }, 0);
+    return false;
   }
 
   // call this when a table was broken
@@ -529,7 +556,7 @@ class TableContainer extends Container {
         return;
       }
       const tableWidth = colGroup.children.reduce((sumWidth, col) => {
-        sumWidth = sumWidth + parseInt(col.formats()[TableCol.blotName].width, 10);
+        sumWidth += parseInt(col.formats()[TableCol.blotName].width, 10);
         return sumWidth;
       }, 0);
       this.domNode.style.width = `${tableWidth}px`;
@@ -544,7 +571,10 @@ class TableContainer extends Container {
         const editorStyles = window.getComputedStyle(editorElem, null);
         const pl = parseInt(editorStyles.getPropertyValue('padding-left'), 10);
         const pr = parseInt(editorStyles.getPropertyValue('padding-right'), 10);
-        const editorWidth = parseInt(editorStyles.getPropertyValue('width'), 10);
+        const editorWidth = parseInt(
+          editorStyles.getPropertyValue('width'),
+          10,
+        );
 
         if (tableWidth <= WIDE_TABLE_WIDTH) {
           this.domNode.parentNode.style.maxWidth = '';
@@ -587,9 +617,9 @@ class TableContainer extends Container {
 
   colGroup() {
     return (
-      this.children.head instanceof TableColGroup &&
-      this.children.head
-    ) || null;
+      (this.children.head instanceof TableColGroup && this.children.head) ||
+      null
+    );
   }
 
   rows() {
@@ -602,11 +632,7 @@ class TableContainer extends Container {
     const quill = Quill.find(this.scroll.domNode.parentNode);
     const [body] = this.descendants(TableBody);
     const [colGroup] = this.descendants(TableColGroup);
-    if (
-      body == null ||
-      body.children.head == null ||
-      colGroup == null
-    ) {
+    if (body == null || body.children.head == null || colGroup == null) {
       return;
     }
 
@@ -616,10 +642,12 @@ class TableContainer extends Container {
     const thisColLength = thisCol.length();
     const insertNewColDelta = new Delta();
     if (isRight) {
-      insertNewColDelta.retain(thisColIndex + thisColLength)
+      insertNewColDelta
+        .retain(thisColIndex + thisColLength)
         .insert('\n', { [TableCol.blotName]: true });
     } else {
-      insertNewColDelta.retain(thisColIndex)
+      insertNewColDelta
+        .retain(thisColIndex)
         .insert('\n', { [TableCol.blotName]: true });
     }
 
@@ -638,40 +666,24 @@ class TableContainer extends Container {
       if (isRight) {
         insertDelta
           .retain(curCellIndex + curCellLength + rowIndex + 1)
-          .insert(
-            '\n',
-            {
-              [TableCellLine.blotName]: Object.assign(
-                {},
-                CELL_DEFAULT,
-                {
-                  row: rowFormats.row,
-                  cell: cellId(),
-                },
-              )
-            }
-          );
+          .insert('\n', {
+            [TableCellLine.blotName]: Object.assign({}, CELL_DEFAULT, {
+              row: rowFormats.row,
+              cell: cellId(),
+            }),
+          });
       } else {
-        insertDelta
-          .retain(curCellIndex + rowIndex + 1)
-          .insert(
-            '\n',
-            {
-              [TableCellLine.blotName]: Object.assign(
-                {},
-                CELL_DEFAULT,
-                {
-                  row: rowFormats.row,
-                  cell: cellId(),
-                },
-              )
-            }
-          );
+        insertDelta.retain(curCellIndex + rowIndex + 1).insert('\n', {
+          [TableCellLine.blotName]: Object.assign({}, CELL_DEFAULT, {
+            row: rowFormats.row,
+            cell: cellId(),
+          }),
+        });
       }
 
       insertNewCellsDelta = insertNewCellsDelta.compose(insertDelta);
       rowIndex += 1;
-    })
+    });
 
     quill.updateContents(insertNewCellsDelta, Quill.sources.USER);
   }
@@ -685,7 +697,7 @@ class TableContainer extends Container {
       colGroup.children.at(index).remove();
       body.children.forEach(tableRow => {
         tableRow.children.at(index).remove();
-      })
+      });
       this.updateTableWidth();
     }
   }
@@ -711,21 +723,21 @@ class TableContainer extends Container {
         Object.assign({}, CELL_DEFAULT, {
           row: newRowId,
           cell,
-        })
+        }),
       );
       cellLine = this.scroll.create(
         TableCellLine.blotName,
         Object.assign({}, CELL_DEFAULT, {
           row: newRowId,
           cell,
-        })
+        }),
       );
       empty = this.scroll.create(Break.blotName);
 
       cellLine.appendChild(empty);
       tableCell.appendChild(cellLine);
       tableRow.appendChild(tableCell);
-    })
+    });
 
     if (ref) {
       tableBody.insertBefore(tableRow, ref);
@@ -743,24 +755,28 @@ class TableContainer extends Container {
     }
   }
 }
-TableContainer.blotName = "table-container";
-TableContainer.className = "clickup-table";
-TableContainer.tagName = "TABLE";
+TableContainer.blotName = 'table-container';
+TableContainer.className = 'clickup-table';
+TableContainer.tagName = 'TABLE';
 
 class TableView extends Container {
   constructor(scroll, domNode) {
     super(scroll, domNode);
     const quill = Quill.find(scroll.domNode.parentNode);
-    domNode.addEventListener('scroll', (e) => {
-      const tableModule = quill.getModule('table');
-      if (tableModule.columnTool) {
-        tableModule.columnTool.domNode.scrollLeft = e.target.scrollLeft;
+    domNode.addEventListener(
+      'scroll',
+      e => {
+        const tableModule = quill.getModule('table');
+        if (tableModule.columnTool) {
+          tableModule.columnTool.domNode.scrollLeft = e.target.scrollLeft;
 
-        if (tableModule.columnTool.activeDropdown) {
-          tableModule.columnTool.activeDropdown.destroy();
+          if (tableModule.columnTool.activeDropdown) {
+            tableModule.columnTool.activeDropdown.destroy();
+          }
         }
-      }
-    }, false);
+      },
+      false,
+    );
   }
 
   table() {
