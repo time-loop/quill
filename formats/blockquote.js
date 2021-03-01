@@ -5,7 +5,6 @@ import Container from '../blots/container';
 import {
   CELL_IDENTITY_KEYS,
   CELL_ATTRIBUTES,
-  ListItem,
   ListBlockWrapper,
   SUPPORTED_LIST_TYPES,
 } from '../modules/clickup-table/formats';
@@ -55,12 +54,12 @@ export class BlockquoteContainer extends Container {
     const formats = {};
     return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat([IN_LIST, WRAPPER_INDENT])
-      .reduce((formats, attribute) => {
+      .reduce((result, attribute) => {
         if (this.domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] =
+          result[attribute] =
             this.domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats;
+        return result;
       }, formats);
   }
 }
@@ -104,12 +103,12 @@ class Blockquote extends Block {
     const formats = {};
     return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat([IN_LIST, WRAPPER_INDENT])
-      .reduce((formats, attribute) => {
+      .reduce((result, attribute) => {
         if (domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] =
+          result[attribute] =
             domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats;
+        return result;
       }, formats);
   }
 

@@ -38,7 +38,9 @@ export default class TableTooltip {
   }
 
   hide() {
-    this.tooltip && this.tooltip.remove();
+    if (this.tooltip) {
+      this.tooltip.remove();
+    }
     this.tooltip = null;
   }
 }

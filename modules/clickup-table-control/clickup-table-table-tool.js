@@ -42,7 +42,7 @@ export default class TableTableControl {
 
     this.domNode.addEventListener(
       'click',
-      e => {
+      () => {
         const tableModule = this.quill.getModule('table');
         tableModule.closeToolsDropdown();
 
@@ -75,7 +75,9 @@ export default class TableTableControl {
 
   setCellToInActive() {
     this.domNode.classList.remove('active');
-    this.helpRect && this.helpRect.remove();
+    if (this.helpRect) {
+      this.helpRect.remove();
+    }
     this.helpRect = null;
   }
 
@@ -85,7 +87,7 @@ export default class TableTableControl {
   }
 
   reposition() {
-    if (!this.quill || !this.quill.root || !this.table) return false;
+    if (!this.quill || !this.quill.root || !this.table) return;
     // table table tool
     const parent = this.quill.root.parentNode;
     const containerRect = parent.getBoundingClientRect();

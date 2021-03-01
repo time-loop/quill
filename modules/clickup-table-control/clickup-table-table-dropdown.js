@@ -59,7 +59,7 @@ export default class TableTableDropdown {
   }
 
   reposition() {
-    if (!this.quill || !this.quill.root || !this.table) return false;
+    if (!this.quill || !this.quill.root || !this.table) return;
 
     const tableViewRect = this.table.parentNode.getBoundingClientRect();
     const parent = this.quill.root.parentNode;
@@ -92,7 +92,7 @@ TableTableDropdown.defaults = {
   },
   copyTable: {
     text: 'Copy Table',
-    handler(e) {
+    handler() {
       const tableContainer = Quill.find(this.table);
       const tableIndex = this.quill.getIndex(tableContainer);
       this.quill.setSelection(

@@ -4,8 +4,6 @@ import { TableBody } from '../clickup-table/formats';
 import IconManager from './clickup-icon-manager';
 import TableTooltip from './clickup-table-tooltip';
 
-const ROW_TOOL_ADD_BUTTON_WIDTH = 12;
-const COL_TOOL_CELL_HEIGHT = 12;
 const ROW_TOOL_WIDTH = 32;
 const ROW_TOOL_CELL_WIDTH = 12;
 const PRIMARY_COLOR = '#35A7ED';
@@ -29,7 +27,6 @@ export default class TableRowControl {
 
   initRowTool() {
     const parent = this.quill.root.parentNode;
-    const tableRect = this.table.getBoundingClientRect();
     const containerRect = parent.getBoundingClientRect();
     const tableViewRect = this.table.parentNode.getBoundingClientRect();
 
@@ -88,7 +85,7 @@ export default class TableRowControl {
     if (!tableContainer) {
       const tableModule = this.quill.getModule('table');
       tableModule.hideTableTools();
-      return false;
+      return;
     }
 
     const [tableBody] = tableContainer.descendants(TableBody);
@@ -101,7 +98,7 @@ export default class TableRowControl {
     for (
       let index = 0;
       index < Math.max(cellsNumber, existCells.length);
-      index++
+      index += 1
     ) {
       let row;
       let rowHeight;
@@ -319,7 +316,7 @@ export default class TableRowControl {
   }
 
   reposition() {
-    if (!this.quill || !this.quill.root || !this.table) return false;
+    if (!this.quill || !this.quill.root || !this.table) return;
 
     const parent = this.quill.root.parentNode;
     const containerRect = parent.getBoundingClientRect();

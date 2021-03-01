@@ -65,7 +65,9 @@ export default class TableColumnDropdown {
   }
 
   reposition() {
-    if (!this.quill || !this.quill.root || !this.toolCell) return false;
+    if (!this.quill || !this.quill.root || !this.toolCell) {
+      return;
+    }
 
     const parent = this.quill.root.parentNode;
     const containerRect = parent.getBoundingClientRect();

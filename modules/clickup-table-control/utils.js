@@ -13,7 +13,7 @@ export function getEventComposedPath(evt) {
   path = evt.path || (evt.composedPath && evt.composedPath());
 
   // other: edge
-  if (path == undefined && evt.target) {
+  if (!path && evt.target) {
     path = [];
     let { target } = evt;
     path.push(target);
@@ -29,8 +29,10 @@ export function getEventComposedPath(evt) {
 
 export function css(domNode, rules) {
   if (typeof rules === 'object') {
-    for (const prop in rules) {
-      domNode.style[prop] = rules[prop];
-    }
+    Object.keys(rules).forEach(key => {
+      if (rules[key]) {
+        domNode.style[key] = rules[key];
+      }
+    });
   }
 }

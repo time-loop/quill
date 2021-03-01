@@ -107,8 +107,8 @@ class TableCellLine extends Block {
   optimize(context) {
     // cover shadowBlot's wrap call, pass params parentBlot initialize
     // needed
-    const cellId = this.domNode.getAttribute('data-cell');
-    const rowId = this.domNode.getAttribute('data-row');
+    const curCellId = this.domNode.getAttribute('data-cell');
+    const curRowId = this.domNode.getAttribute('data-row');
     const rowspan = this.domNode.getAttribute('data-rowspan');
     const colspan = this.domNode.getAttribute('data-colspan');
     if (
@@ -116,8 +116,8 @@ class TableCellLine extends Block {
       !(this.parent instanceof this.statics.requiredContainer)
     ) {
       this.wrap(this.statics.requiredContainer.blotName, {
-        cell: cellId,
-        row: rowId,
+        cell: curCellId,
+        row: curRowId,
         colspan,
         rowspan,
       });
@@ -252,15 +252,15 @@ class TableCell extends Container {
   }
 
   optimize(context) {
-    const rowId = this.domNode.getAttribute('data-row');
-    const cellId = this.domNode.getAttribute('data-cell');
+    const curRowId = this.domNode.getAttribute('data-row');
+    const curCellId = this.domNode.getAttribute('data-cell');
 
     if (
       this.statics.requiredContainer &&
       !(this.parent instanceof this.statics.requiredContainer)
     ) {
       this.wrap(this.statics.requiredContainer.blotName, {
-        row: rowId,
+        row: curRowId,
       });
     } else if (
       this.statics.requiredContainer &&
@@ -269,18 +269,20 @@ class TableCell extends Container {
         .map(child => child)
         .every(
           item =>
-            item instanceof ListContainer || item instanceof TableCellLine,
+            item.statics.blotName === 'list-container' ||
+            item.statics.blotName === 'table-cell-line',
         )
     ) {
       const hasChildInOtherCell = this.children
         .map(child => {
           const childFormats = child.formats();
-          if (child instanceof ListContainer) {
-            return cellId === childFormats.cell;
+          if (child.statics.blotName === 'list-container') {
+            return curCellId === childFormats.cell;
           }
-          if (child instanceof TableCellLine) {
-            return cellId === childFormats['table-cell-line'].cell;
+          if (child.statics.blotName === 'table-cell-line') {
+            return curCellId === childFormats['table-cell-line'].cell;
           }
+          return false;
         })
         .some(item => !item);
       if (hasChildInOtherCell) {

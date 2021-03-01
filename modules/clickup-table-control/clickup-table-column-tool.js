@@ -31,7 +31,6 @@ export default class TableColumnControl {
   initColTool() {
     const parent = this.quill.root.parentNode;
     const tableView = this.table.parentNode;
-    const tableRect = this.table.getBoundingClientRect();
     const containerRect = parent.getBoundingClientRect();
     const tableViewRect = tableView.getBoundingClientRect();
 
@@ -90,7 +89,7 @@ export default class TableColumnControl {
     if (!tableContainer || !tableContainer.colGroup()) {
       const tableModule = this.quill.getModule('table');
       tableModule.hideTableTools();
-      return false;
+      return;
     }
 
     const tableCols = tableContainer.colGroup().children;
@@ -102,7 +101,7 @@ export default class TableColumnControl {
     for (
       let index = 0;
       index < Math.max(cellsNumber, existCells.length);
-      index++
+      index += 1
     ) {
       const col = tableCols.at(index);
       const colWidth =
@@ -186,7 +185,9 @@ export default class TableColumnControl {
 
   setCellToInActive(cell) {
     cell.classList.remove('active');
-    this.helpRect && this.helpRect.remove();
+    if (this.helpRect) {
+      this.helpRect.remove();
+    }
     this.helpRect = null;
     this.activeCell = null;
   }
@@ -198,7 +199,6 @@ export default class TableColumnControl {
     const $buttonLeft = cell.querySelector('.cu-col-tool-cell-add-col-left');
     // helpline relative vars
     let containerRect;
-    let tableRect;
     let tableViewRect;
     let cellRect;
 
@@ -218,7 +218,6 @@ export default class TableColumnControl {
         this.tooltip.show(e.target);
 
         containerRect = parent.getBoundingClientRect();
-        tableRect = this.table.getBoundingClientRect();
         tableViewRect = this.table.parentNode.getBoundingClientRect();
         cellRect = cell.getBoundingClientRect();
 
@@ -275,7 +274,6 @@ export default class TableColumnControl {
         this.tooltip.show(e.target);
 
         containerRect = parent.getBoundingClientRect();
-        tableRect = this.table.getBoundingClientRect();
         tableViewRect = this.table.parentNode.getBoundingClientRect();
         cellRect = cell.getBoundingClientRect();
 
@@ -330,7 +328,6 @@ export default class TableColumnControl {
     let width0 = 0;
     // helpLine relation varrible
     let tableViewRect = {};
-    let tableRect = {};
     let cellRect = {};
     let $helpLine = null;
 
@@ -381,7 +378,6 @@ export default class TableColumnControl {
 
       document.body.removeEventListener('mousemove', handleDrag);
       document.body.removeEventListener('mouseup', handleMouseup);
-      tableRect = {};
       cellRect = {};
       $helpLine.remove();
       $helpLine = null;
@@ -395,7 +391,6 @@ export default class TableColumnControl {
       document.body.addEventListener('mousemove', handleDrag);
       document.body.addEventListener('mouseup', handleMouseup);
 
-      tableRect = this.table.getBoundingClientRect();
       tableViewRect = this.table.parentNode.getBoundingClientRect();
       cellRect = cell.getBoundingClientRect();
 
@@ -432,8 +427,9 @@ export default class TableColumnControl {
       !this.quill.root ||
       !this.table ||
       !this.table.parentNode
-    )
-      return false;
+    ) {
+      return;
+    }
 
     const parent = this.quill.root.parentNode;
     const tableView = this.table.parentNode;

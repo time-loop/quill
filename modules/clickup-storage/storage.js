@@ -1,4 +1,3 @@
-import { filter } from 'lodash';
 import Quill from '../../core/quill';
 import Module from '../../core/module';
 
@@ -71,7 +70,7 @@ export default class QuillStorage extends Module {
 
   removeCollapsedToggleList(listItemId) {
     let lists = this.getItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST) || [];
-    lists = filter(lists, item => item.id !== listItemId);
+    lists = lists.filter(item => item.id !== listItemId);
     this.setItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST, lists);
   }
 
