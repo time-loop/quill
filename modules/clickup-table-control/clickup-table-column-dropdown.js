@@ -27,7 +27,10 @@ export default class TableColumnDropdown {
     this.domNode = document.createElement('div');
     this.domNode.classList.add('cu-col-tool-dropdown');
 
-    let item, $dropdownItem, $dropdownItemIcon, $dropdownItemText;
+    let item;
+    let $dropdownItem;
+    let $dropdownItemIcon;
+    let $dropdownItemText;
     Object.keys(TableColumnDropdown.defaults).forEach(key => {
       item = TableColumnDropdown.defaults[key];
       $dropdownItem = document.createElement('div');

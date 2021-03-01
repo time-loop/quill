@@ -94,7 +94,7 @@ export default class TableRowControl {
     const [tableBody] = tableContainer.descendants(TableBody);
     const tableRows = tableBody.children;
     const cellsNumber = tableRows.length;
-    let existCells = Array.from(
+    const existCells = Array.from(
       this.domNode.querySelectorAll('.cu-row-tool-cell'),
     );
 

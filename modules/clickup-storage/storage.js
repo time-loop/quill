@@ -1,6 +1,6 @@
+import { filter } from 'lodash';
 import Quill from '../../core/quill';
 import Module from '../../core/module';
-import { filter } from 'lodash';
 
 import { ListItem } from '../clickup-table/formats';
 
@@ -26,7 +26,7 @@ const fakeStorage = {
 };
 
 const isSupportLocalStorage = storage => {
-  if (!!storage) {
+  if (storage) {
     try {
       storage.setItem('cu_storage_test', 'test');
       storage.removeItem('cu_storage_test');

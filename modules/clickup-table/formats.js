@@ -182,11 +182,11 @@ class TableCell extends Container {
     const formats = {};
 
     if (domNode.hasAttribute('data-row')) {
-      formats['row'] = domNode.getAttribute('data-row');
+      formats.row = domNode.getAttribute('data-row');
     }
 
     if (domNode.hasAttribute('data-cell')) {
-      formats['cell'] = domNode.getAttribute('data-cell');
+      formats.cell = domNode.getAttribute('data-cell');
     }
 
     return CELL_ATTRIBUTES.reduce((result, attribute) => {
@@ -209,11 +209,11 @@ class TableCell extends Container {
     const formats = {};
 
     if (this.domNode.hasAttribute('data-row')) {
-      formats['row'] = this.domNode.getAttribute('data-row');
+      formats.row = this.domNode.getAttribute('data-row');
     }
 
     if (this.domNode.hasAttribute('data-cell')) {
-      formats['cell'] = this.domNode.getAttribute('data-cell');
+      formats.cell = this.domNode.getAttribute('data-cell');
     }
 
     return CELL_ATTRIBUTES.reduce((result, attribute) => {
@@ -277,7 +277,8 @@ class TableCell extends Container {
           const childFormats = child.formats();
           if (child instanceof ListContainer) {
             return cellId === childFormats.cell;
-          } else if (child instanceof TableCellLine) {
+          }
+          if (child instanceof TableCellLine) {
             return cellId === childFormats['table-cell-line'].cell;
           }
         })

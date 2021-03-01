@@ -95,7 +95,7 @@ export default class TableColumnControl {
 
     const tableCols = tableContainer.colGroup().children;
     const cellsNumber = tableCols.length;
-    let existCells = Array.from(
+    const existCells = Array.from(
       this.domNode.querySelectorAll('.cu-col-tool-cell'),
     );
 
@@ -104,8 +104,8 @@ export default class TableColumnControl {
       index < Math.max(cellsNumber, existCells.length);
       index++
     ) {
-      let col = tableCols.at(index);
-      let colWidth =
+      const col = tableCols.at(index);
+      const colWidth =
         col && parseInt(col.formats()[col.statics.blotName].width, 10);
       // if cell already exist
       let toolCell = null;
