@@ -1,27 +1,26 @@
-import Quill from "../../core/quill"
-import Delta from "quill-delta"
-import { css } from "../clickup-table-control/utils"
-import { THE_KEY_FOR_EXPANDED_TOGGLE_LIST } from '../clickup-storage/storage'
+import Quill from '../../core/quill';
+import Delta from 'quill-delta';
+import { css } from '../clickup-table-control/utils';
 
-const Block = Quill.import("blots/block")
-const Container = Quill.import("blots/container")
-const Break = Quill.import("blots/break")
+const Block = Quill.import('blots/block');
+const Container = Quill.import('blots/container');
+const Break = Quill.import('blots/break');
 
-const COL_ATTRIBUTES = ["width"]
+const COL_ATTRIBUTES = ['width'];
 const COL_DEFAULT = {
-  width: 150
-}
-const CELL_IDENTITY_KEYS = ["row", "cell"]
-const CELL_ATTRIBUTES = ["rowspan", "colspan"]
+  width: 150,
+};
+const CELL_IDENTITY_KEYS = ['row', 'cell'];
+const CELL_ATTRIBUTES = ['rowspan', 'colspan'];
 const CELL_DEFAULT = {
   rowspan: 1,
-  colspan: 1
-}
+  colspan: 1,
+};
 
 const WIDE_TABLE_CLASS = 'clickup-table-view_wide';
 const WIDE_TABLE_WIDTH = 730;
 
-const WRAPPER_INDENT_KEY = 'wrapper-indent'
+const WRAPPER_INDENT_KEY = 'wrapper-indent';
 const SUPPORTED_LIST_TYPES = [
   'bullet',
   'ordered',
@@ -33,39 +32,39 @@ const SUPPORTED_LIST_TYPES = [
 
 class TableCellLine extends Block {
   static create(value) {
-    const node = super.create(value)
+    const node = super.create(value);
 
     CELL_IDENTITY_KEYS.forEach(key => {
-      let identityMaker = key === 'row'
+      const identityMaker = key === 'row'
         ? rowId : cellId
-      node.setAttribute(`data-${key}`, value[key] || identityMaker())
+      node.setAttribute(`data-${key}`, value[key] || identityMaker());
     })
 
     CELL_ATTRIBUTES.forEach(attrName => {
-      node.setAttribute(`data-${attrName}`, value[attrName] || CELL_DEFAULT[attrName])
-    })
+      node.setAttribute(`data-${attrName}`, value[attrName] || CELL_DEFAULT[attrName]);
+    });
 
-    return node
+    return node;
   }
 
   static formats(domNode) {
-    const formats = {}
+    const formats = {};
 
-    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).reduce((result, attribute) => {
       if (domNode.hasAttribute(`data-${attribute}`)) {
-        formats[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined
+        result[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined;
       }
-      return formats
-    }, formats)
+      return result;
+    }, formats);
   }
 
   format(name, value) {
-    const { row, cell, rowspan, colspan } = TableCellLine.formats(this.domNode)
+    const { row, cell, rowspan, colspan } = TableCellLine.formats(this.domNode);
     if (CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).indexOf(name) > -1) {
       if (value) {
-        this.domNode.setAttribute(`data-${name}`, value)
+        this.domNode.setAttribute(`data-${name}`, value);
       } else {
-        this.domNode.removeAttribute(`data-${name}`)
+        this.domNode.removeAttribute(`data-${name}`);
       }
     } else if (name === 'list') {
       if (typeof value === 'string') {
@@ -74,10 +73,10 @@ class TableCellLine extends Block {
           row,
           cell,
           rowspan,
-          colspan
-        })
+          colspan,
+        });
       } else {
-        super.format(name, value)
+        super.format(name, value);
       }
     } else if (name === 'table-cell-line') {
       if (value) {
@@ -88,43 +87,43 @@ class TableCellLine extends Block {
             row,
             cell,
             rowspan,
-            colspan
-          })
+            colspan,
+          });
         }
       } else {
-        super.format(name, value)
+        super.format(name, value);
       }
     } else {
-      super.format(name, value)
+      super.format(name, value);
     }
   }
 
   optimize(context) {
     // cover shadowBlot's wrap call, pass params parentBlot initialize
     // needed
-    const cellId = this.domNode.getAttribute('data-cell')
-    const rowId = this.domNode.getAttribute('data-row')
-    const rowspan = this.domNode.getAttribute('data-rowspan')
-    const colspan = this.domNode.getAttribute('data-colspan')
+    const cellId = this.domNode.getAttribute('data-cell');
+    const rowId = this.domNode.getAttribute('data-row');
+    const rowspan = this.domNode.getAttribute('data-rowspan');
+    const colspan = this.domNode.getAttribute('data-colspan');
     if (this.statics.requiredContainer &&
-      !(this.parent instanceof this.statics.requiredContainer)) {
+        !(this.parent instanceof this.statics.requiredContainer)) {
       this.wrap(this.statics.requiredContainer.blotName, {
         cell: cellId,
         row: rowId,
         colspan,
-        rowspan
-      })
+        rowspan,
+      });
     }
-    super.optimize(context)
+    super.optimize(context);
   }
 
   tableCell() {
-    return this.parent
+    return this.parent;
   }
 }
-TableCellLine.blotName = "table-cell-line"
-TableCellLine.className = "qlbt-cell-line"
-TableCellLine.tagName = "DIV"
+TableCellLine.blotName = "table-cell-line";
+TableCellLine.className = "qlbt-cell-line";
+TableCellLine.tagName = "DIV";
 
 class TableCell extends Container {
   checkMerge() {
@@ -134,119 +133,119 @@ class TableCell extends Container {
       typeof this.next.children.head.formats === 'function'
     ) {
       const thisHead = this.children.head.formats()[this.children.head.statics.blotName] ||
-        this.children.head.formats()
+        this.children.head.formats();
       const thisTail = this.children.tail.formats()[this.children.tail.statics.blotName] ||
-        this.children.tail.formats()
+        this.children.tail.formats();
       const nextHead = this.next.children.head.formats()[this.next.children.head.statics.blotName] ||
-        this.next.children.head.formats()
+        this.next.children.head.formats();
       const nextTail = this.next.children.tail.formats()[this.next.children.tail.statics.blotName] ||
-        this.next.children.tail.formats()
+        this.next.children.tail.formats();
 
       return (
         thisHead.cell === thisTail.cell &&
         thisHead.cell === nextHead.cell &&
         thisHead.cell === nextTail.cell
-      )
+      );
     }
-    return false
+    return false;
   }
 
   static create(value) {
-    const node = super.create(value)
-    node.setAttribute("data-row", value.row)
-    node.setAttribute("data-cell", value.cell)
+    const node = super.create(value);
+    node.setAttribute("data-row", value.row);
+    node.setAttribute("data-cell", value.cell);
 
     CELL_ATTRIBUTES.forEach(attrName => {
       if (value[attrName]) {
-        node.setAttribute(attrName, value[attrName])
+        node.setAttribute(attrName, value[attrName]);
       }
-    })
+    });
 
-    return node
+    return node;
   }
 
   static formats(domNode) {
-    const formats = {}
+    const formats = {};
 
     if (domNode.hasAttribute("data-row")) {
-      formats["row"] = domNode.getAttribute("data-row")
+      formats["row"] = domNode.getAttribute("data-row");
     }
 
     if (domNode.hasAttribute("data-cell")) {
-      formats["cell"] = domNode.getAttribute("data-cell")
+      formats["cell"] = domNode.getAttribute("data-cell");
     }
 
-    return CELL_ATTRIBUTES.reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.reduce((result, attribute) => {
       if (domNode.hasAttribute(attribute)) {
-        formats[attribute] = domNode.getAttribute(attribute)
+        result[attribute] = domNode.getAttribute(attribute);
       }
 
-      return formats
-    }, formats)
+      return result;
+    }, formats);
   }
 
   cellOffset() {
     if (this.parent) {
-      return this.parent.children.indexOf(this)
+      return this.parent.children.indexOf(this);
     }
-    return -1
+    return -1;
   }
 
   formats() {
-    const formats = {}
+    const formats = {};
 
     if (this.domNode.hasAttribute("data-row")) {
-      formats["row"] = this.domNode.getAttribute("data-row")
+      formats["row"] = this.domNode.getAttribute("data-row");
     }
 
     if (this.domNode.hasAttribute("data-cell")) {
-      formats["cell"] = this.domNode.getAttribute("data-cell")
+      formats["cell"] = this.domNode.getAttribute("data-cell");
     }
 
-    return CELL_ATTRIBUTES.reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.reduce((result, attribute) => {
       if (this.domNode.hasAttribute(attribute)) {
-        formats[attribute] = this.domNode.getAttribute(attribute)
+        result[attribute] = this.domNode.getAttribute(attribute);
       }
 
-      return formats
-    }, formats)
+      return result;
+    }, formats);
   }
 
   toggleAttribute(name, value) {
     if (value) {
-      this.domNode.setAttribute(name, value)
+      this.domNode.setAttribute(name, value);
     } else {
-      this.domNode.removeAttribute(name)
+      this.domNode.removeAttribute(name);
     }
   }
 
   formatChildren(name, value) {
     this.children.forEach(child => {
-      child.format(name, value)
-    })
+      child.format(name, value);
+    });
   }
 
   format(name, value) {
     if (CELL_ATTRIBUTES.indexOf(name) > -1) {
-      this.toggleAttribute(name, value)
-      this.formatChildren(name, value)
+      this.toggleAttribute(name, value);
+      this.formatChildren(name, value);
     } else if (['row'].indexOf(name) > -1) {
-      this.toggleAttribute(`data-${name}`, value)
-      this.formatChildren(name, value)
+      this.toggleAttribute(`data-${name}`, value);
+      this.formatChildren(name, value);
     } else {
-      super.format(name, value)
+      super.format(name, value);
     }
   }
 
   optimize(context) {
-    const rowId = this.domNode.getAttribute("data-row")
-    const cellId = this.domNode.getAttribute("data-cell")
+    const rowId = this.domNode.getAttribute("data-row");
+    const cellId = this.domNode.getAttribute("data-cell");
 
     if (this.statics.requiredContainer &&
       !(this.parent instanceof this.statics.requiredContainer)) {
       this.wrap(this.statics.requiredContainer.blotName, {
-        row: rowId
-      })
+        row: rowId,
+      });
     } else if (
       this.statics.requiredContainer &&
       this.parent instanceof this.statics.requiredContainer &&
@@ -256,44 +255,44 @@ class TableCell extends Container {
         .map(child => {
           const childFormats = child.formats();
           if (child instanceof ListContainer) {
-            return cellId === childFormats.cell
+            return cellId === childFormats.cell;
           } else if (child instanceof TableCellLine) {
-            return cellId === childFormats['table-cell-line'].cell
+            return cellId === childFormats['table-cell-line'].cell;
           }
         })
-        .some(item => !item)
+        .some(item => !item);
       if (hasChildInOtherCell) {
         this.unwrap();
       }
     }
-    super.optimize(context)
+    super.optimize(context);
   }
 
   row() {
-    return this.parent
+    return this.parent;
   }
 
   rowOffset() {
     if (this.row()) {
-      return this.row().rowOffset()
+      return this.row().rowOffset();
     }
-    return -1
+    return -1;
   }
 
   table() {
-    return this.row() && this.row().table()
+    return this.row() && this.row().table();
   }
 }
-TableCell.blotName = "table"
-TableCell.tagName = "TD"
+TableCell.blotName = "table";
+TableCell.tagName = "TD";
 
 class TableRow extends Container {
   checkMerge() {
     if (super.checkMerge() && this.next.children.head != null) {
-      const thisHead = this.children.head instanceof TableCell && this.children.head.formats()
-      const thisTail = this.children.tail instanceof TableCell && this.children.tail.formats()
-      const nextHead = this.next.children.head instanceof TableCell && this.next.children.head.formats()
-      const nextTail = this.next.children.tail instanceof TableCell && this.next.children.tail.formats()
+      const thisHead = this.children.head instanceof TableCell && this.children.head.formats();
+      const thisTail = this.children.tail instanceof TableCell && this.children.tail.formats();
+      const nextHead = this.next.children.head instanceof TableCell && this.next.children.head.formats();
+      const nextTail = this.next.children.tail instanceof TableCell && this.next.children.tail.formats();
 
       return (
         thisHead &&
@@ -303,23 +302,23 @@ class TableRow extends Container {
         thisHead.row === thisTail.row &&
         thisHead.row === nextHead.row &&
         thisHead.row === nextTail.row
-      )
+      );
     }
-    return false
+    return false;
   }
 
   static create(value) {
-    const node = super.create(value)
-    node.setAttribute("data-row", value.row)
-    return node
+    const node = super.create(value);
+    node.setAttribute("data-row", value.row);
+    return node;
   }
 
   formats() {
     return ["row"].reduce((formats, attrName) => {
       if (this.domNode.hasAttribute(`data-${attrName}`)) {
-        formats[attrName] = this.domNode.getAttribute(`data-${attrName}`)
+        formats[attrName] = this.domNode.getAttribute(`data-${attrName}`);
       }
-      return formats
+      return formats;
     }, {})
   }
 
@@ -330,7 +329,7 @@ class TableRow extends Container {
       this.statics.requiredContainer &&
       !(this.parent instanceof this.statics.requiredContainer)
     ) {
-      this.wrap(this.statics.requiredContainer.blotName)
+      this.wrap(this.statics.requiredContainer.blotName);
     } else if (
       this.statics.requiredContainer &&
       this.parent instanceof this.statics.requiredContainer &&
@@ -340,32 +339,32 @@ class TableRow extends Container {
         .map(child => {
           const childFormats = child.formats();
           if (child instanceof TableCell) {
-            return rowId === childFormats.row
+            return rowId === childFormats.row;
           }
-          return true
+          return true;
         })
-        .some(item => !item)
+        .some(item => !item);
       if (hasChildInOtherRow) {
         this.unwrap();
       }
     }
 
-    super.optimize(context)
+    super.optimize(context);
   }
 
   rowOffset() {
     if (this.parent) {
-      return this.parent.children.indexOf(this)
+      return this.parent.children.indexOf(this);
     }
-    return -1
+    return -1;
   }
 
   table() {
-    return this.parent && this.parent.parent
+    return this.parent && this.parent.parent;
   }
 }
-TableRow.blotName = "table-row"
-TableRow.tagName = "TR"
+TableRow.blotName = "table-row";
+TableRow.tagName = "TR";
 
 class TableBody extends Container {
   optimize(context) {
@@ -373,229 +372,236 @@ class TableBody extends Container {
     super.optimize(context);
   }
 }
-TableBody.blotName = "table-body"
-TableBody.tagName = "TBODY"
+TableBody.blotName = "table-body";
+TableBody.tagName = "TBODY";
 
 class TableCol extends Block {
   static create(value) {
-    let node = super.create(value)
+    let node = super.create(value);
     COL_ATTRIBUTES.forEach(attrName => {
-      node.setAttribute(`${attrName}`, value[attrName] || COL_DEFAULT[attrName])
-    })
-    return node
+      node.setAttribute(`${attrName}`, value[attrName] || COL_DEFAULT[attrName]);
+    });
+    return node;
   }
 
   static formats(domNode) {
     return COL_ATTRIBUTES.reduce((formats, attribute) => {
       if (domNode.hasAttribute(`${attribute}`)) {
         formats[attribute] =
-          domNode.getAttribute(`${attribute}`) || undefined
+          domNode.getAttribute(`${attribute}`) || undefined;
       }
-      return formats
-    }, {})
+      return formats;
+    }, {});
   }
 
   format(name, value) {
     if (COL_ATTRIBUTES.indexOf(name) > -1) {
-      this.domNode.setAttribute(`${name}`, value || COL_DEFAULT[name])
+      this.domNode.setAttribute(`${name}`, value || COL_DEFAULT[name]);
     } else if (
       name === TableCol.blotName ||
       name === TableCellLine.blotName
     ) {
-      super.format(name, value)
+      super.format(name, value);
     }
   }
 
   html() {
-    return this.domNode.outerHTML
+    return this.domNode.outerHTML;
   }
 }
-TableCol.blotName = "table-col"
-TableCol.tagName = "col"
+TableCol.blotName = "table-col";
+TableCol.tagName = "col";
 
-class TableColGroup extends Container { }
-TableColGroup.blotName = "table-col-group"
-TableColGroup.tagName = "colgroup"
+class TableColGroup extends Container {}
+TableColGroup.blotName = "table-col-group";
+TableColGroup.tagName = "colgroup";
 
 class TableContainer extends Container {
   static create() {
-    let node = super.create()
-    return node
+    let node = super.create();
+    return node;
   }
 
   constructor(scroll, domNode) {
-    super(scroll, domNode)
-    this.updateTableWidth()
+    super(scroll, domNode);
+    this.updateTableWidth();
   }
 
   balanceCells() {
     if (this.descendants(TableCell).length <= 0) {
-      this.remove()
-      return false
+      this.remove();
+      return false;
     }
     // workaround: remove the extra colgroup when two tables were accidentally merged into one.
-    const existTableGroup = this.descendants(TableColGroup)
+    const existTableGroup = this.descendants(TableColGroup);
     if (existTableGroup.length > 1) {
       existTableGroup.forEach((group, index) => {
         if (index > 0) {
-          group.remove()
+          group.remove();
         }
-      })
+      });
     }
 
     // workaround: fix table col missed child break node when a block dragged above the table,
     // throw error: leaf.position is not a function.
-    const existTableCol = this.descendants(TableCol)
+    const existTableCol = this.descendants(TableCol);
     existTableCol.forEach(col => {
       if (col.children.length === 0) {
-        col.optimize()
+        col.optimize();
       }
-    })
+    });
     // workaround: fix table cell line missed child break node when table was broken,
     // throw error: leaf.position is not a function.
-    const existTableCellLine = this.descendants(TableCellLine)
+    const existTableCellLine = this.descendants(TableCellLine);
     existTableCellLine.forEach(cellLine => {
       if (cellLine.children.length === 0) {
-        cellLine.optimize()
+        cellLine.optimize();
       }
-    })
+    });
 
     setTimeout(() => {
-      // this.rebuildWholeTable()
-      this.updateTableWidth()
-    }, 0)
+      this.updateTableWidth();
+    }, 0);
   }
 
   // call this when a table was broken
-  rebuildWholeTable() {
-    let colGroup = this.colGroup()
-    const [body] = this.descendants(TableBody)
-    const rows = this.descendants(TableRow);
-    const maxColumns = rows.reduce((max, row) => {
-      return Math.max(row.children.length, max);
-    }, 0);
+  // rebuildWholeTable() {
+  //   let colGroup = this.colGroup()
+  //   const [body] = this.descendants(TableBody)
+  //   const rows = this.descendants(TableRow);
+  //   const maxColumns = rows.reduce((max, row) => {
+  //     return Math.max(row.children.length, max);
+  //   }, 0);
 
-    // rebuild table column group
-    if (!colGroup) {
-      colGroup = this.scroll.create(TableColGroup.blotName, true)
-      new Array(maxColumns).fill(0).forEach(() => {
-        const tableCol = this.scroll.create(TableCol.blotName, true)
-        colGroup.appendChild(tableCol)
-        tableCol.optimize()
-      })
-      this.insertBefore(colGroup, body)
-    } else {
-      const differ = maxColumns - colGroup.children.length
-      if (differ > 0) {
-        new Array(differ).fill(0).forEach(() => {
-          const tableCol = this.scroll.create(TableCol.blotName, true)
-          colGroup.appendChild(tableCol)
-          tableCol.optimize()
-        })
-      } else if (differ < 0) {
-        new Array(Math.abs(differ)).fill(0).forEach(() => {
-          colGroup.children.tail.remove()
-        })
-      }
-    }
+  //   // rebuild table column group
+  //   if (!colGroup) {
+  //     colGroup = this.scroll.create(TableColGroup.blotName, true)
+  //     new Array(maxColumns).fill(0).forEach(() => {
+  //       const tableCol = this.scroll.create(TableCol.blotName, true)
+  //       colGroup.appendChild(tableCol)
+  //       tableCol.optimize()
+  //     })
+  //     this.insertBefore(colGroup, body)
+  //   } else {
+  //     const differ = maxColumns - colGroup.children.length
+  //     if (differ > 0) {
+  //       new Array(differ).fill(0).forEach(() => {
+  //         const tableCol = this.scroll.create(TableCol.blotName, true)
+  //         colGroup.appendChild(tableCol)
+  //         tableCol.optimize()
+  //       })
+  //     } else if (differ < 0) {
+  //       new Array(Math.abs(differ)).fill(0).forEach(() => {
+  //         colGroup.children.tail.remove()
+  //       })
+  //     }
+  //   }
 
-    // rebuild missing table cells
-    rows.forEach(row => {
-      new Array(maxColumns - row.children.length).fill(0).forEach(() => {
-        const cell = cellId()
-        const tableCell = this.scroll.create(
-          TableCell.blotName,
-          Object.assign({}, CELL_DEFAULT, {
-            row: row.formats().row,
-            cell
-          })
-        )
-        const cellLine = this.scroll.create(
-          TableCellLine.blotName,
-          Object.assign({}, CELL_DEFAULT, {
-            row: row.formats().row,
-            cell
-          })
-        )
-        tableCell.appendChild(cellLine)
-        row.appendChild(tableCell)
-        cellLine.optimize()
-      });
-    });
-  }
+  //   // rebuild missing table cells
+  //   rows.forEach(row => {
+  //     new Array(maxColumns - row.children.length).fill(0).forEach(() => {
+  //       const cell = cellId()
+  //       const tableCell = this.scroll.create(
+  //         TableCell.blotName,
+  //         Object.assign({}, CELL_DEFAULT, {
+  //           row: row.formats().row,
+  //           cell
+  //         })
+  //       )
+  //       const cellLine = this.scroll.create(
+  //         TableCellLine.blotName,
+  //         Object.assign({}, CELL_DEFAULT, {
+  //           row: row.formats().row,
+  //           cell
+  //         })
+  //       )
+  //       tableCell.appendChild(cellLine)
+  //       row.appendChild(tableCell)
+  //       cellLine.optimize()
+  //     });
+  //   });
+  // }
 
   updateTableWidth() {
     setTimeout(() => {
-      const colGroup = this.colGroup()
-      if (!colGroup || !this.domNode.parentNode) return
+      const colGroup = this.colGroup();
+      if (!colGroup || !this.domNode.parentNode) {
+        return;
+      }
       const tableWidth = colGroup.children.reduce((sumWidth, col) => {
-        sumWidth = sumWidth + parseInt(col.formats()[TableCol.blotName].width, 10)
-        return sumWidth
-      }, 0)
-      this.domNode.style.width = `${tableWidth}px`
+        sumWidth = sumWidth + parseInt(col.formats()[TableCol.blotName].width, 10);
+        return sumWidth;
+      }, 0);
+      this.domNode.style.width = `${tableWidth}px`;
       if (tableWidth > WIDE_TABLE_WIDTH) {
         this.domNode.parentNode.classList.add(WIDE_TABLE_CLASS);
       } else {
         this.domNode.parentNode.classList.remove(WIDE_TABLE_CLASS);
       }
       // reposition table tools
-      const editorElem = this.scroll.domNode
+      const editorElem = this.scroll.domNode;
       if (editorElem) {
-        const editorStyles = window.getComputedStyle(editorElem, null)
-        const pl = parseInt(editorStyles.getPropertyValue('padding-left'), 10)
-        const pr = parseInt(editorStyles.getPropertyValue('padding-right'), 10)
-        const editorWidth = parseInt(editorStyles.getPropertyValue('width'), 10)
+        const editorStyles = window.getComputedStyle(editorElem, null);
+        const pl = parseInt(editorStyles.getPropertyValue('padding-left'), 10);
+        const pr = parseInt(editorStyles.getPropertyValue('padding-right'), 10);
+        const editorWidth = parseInt(editorStyles.getPropertyValue('width'), 10);
 
         if (tableWidth <= WIDE_TABLE_WIDTH) {
-          this.domNode.parentNode.style.maxWidth = ''
+          this.domNode.parentNode.style.maxWidth = '';
         } else if (
           tableWidth < editorWidth - pl - pr &&
           tableWidth > WIDE_TABLE_WIDTH
         ) {
-          this.domNode.parentNode.style.maxWidth = `${tableWidth + 1}px`
+          this.domNode.parentNode.style.maxWidth = `${tableWidth + 1}px`;
         } else {
-          this.domNode.parentNode.style.maxWidth = `100%`
+          this.domNode.parentNode.style.maxWidth = `100%`;
         }
 
-        const quill = Quill.find(editorElem.parentNode)
-        const tableModule = quill.getModule('table')
+        const quill = Quill.find(editorElem.parentNode);
+        const tableModule = quill.getModule('table');
         if (tableModule && tableModule.table) {
-          tableModule.columnTool && tableModule.columnTool.reposition()
-          tableModule.rowTool && tableModule.rowTool.reposition()
-          tableModule.tableTool && tableModule.tableTool.reposition()
+          if (tableModule.columnTool) {
+            tableModule.columnTool.reposition();
+          }
+          if (tableModule.rowTool) {
+            tableModule.rowTool.reposition();
+          }
+          if (tableModule.tableTool) {
+            tableModule.tableTool.reposition();
+          }
         }
       }
-    }, 0)
+    }, 0);
   }
 
   remove() {
-    const quill = Quill.find(this.scroll.domNode.parentNode)
-    const tableModule = quill.getModule('table')
-    tableModule.hideTableTools()
-    super.remove()
+    const quill = Quill.find(this.scroll.domNode.parentNode);
+    const tableModule = quill.getModule('table');
+    tableModule.hideTableTools();
+    super.remove();
   }
 
   cells(column) {
-    return this.rows().map(row => row.children.at(column))
+    return this.rows().map(row => row.children.at(column));
   }
 
   colGroup() {
     return (
       this.children.head instanceof TableColGroup &&
       this.children.head
-    ) || null
+    ) || null;
   }
 
   rows() {
-    const body = this.children.tail
-    if (body == null) return []
-    return body.children.map(row => row)
+    const body = this.children.tail;
+    if (body == null) return [];
+    return body.children.map(row => row);
   }
 
   insertColumn(index, isRight = true) {
-    const quill = Quill.find(this.scroll.domNode.parentNode)
-    const [body] = this.descendants(TableBody)
-    const [colGroup] = this.descendants(TableColGroup)
+    const quill = Quill.find(this.scroll.domNode.parentNode);
+    const [body] = this.descendants(TableBody);
+    const [colGroup] = this.descendants(TableColGroup);
     if (
       body == null ||
       body.children.head == null ||
@@ -605,29 +611,29 @@ class TableContainer extends Container {
     }
 
     // insert tableCol at first
-    const thisCol = colGroup.children.at(index)
-    const thisColIndex = quill.getIndex(thisCol)
-    const thisColLength = thisCol.length()
-    const insertNewColDelta = new Delta()
+    const thisCol = colGroup.children.at(index);
+    const thisColIndex = quill.getIndex(thisCol);
+    const thisColLength = thisCol.length();
+    const insertNewColDelta = new Delta();
     if (isRight) {
       insertNewColDelta.retain(thisColIndex + thisColLength)
-        .insert('\n', { [TableCol.blotName]: true })
+        .insert('\n', { [TableCol.blotName]: true });
     } else {
       insertNewColDelta.retain(thisColIndex)
-      .insert('\n', { [TableCol.blotName]: true })
+        .insert('\n', { [TableCol.blotName]: true });
     }
 
     let insertNewCellsDelta = new Delta()
       .retain(quill.getLength())
-      .compose(insertNewColDelta)
+      .compose(insertNewColDelta);
 
-    let rowIndex = 0
+    let rowIndex = 0;
     body.children.forEach(row => {
-      const rowFormats = row.formats()
+      const rowFormats = row.formats();
       const curCell = row.children.at(index);
-      const curCellIndex = quill.getIndex(curCell)
-      const curCellLength = curCell.length()
-      const insertDelta = new Delta()
+      const curCellIndex = quill.getIndex(curCell);
+      const curCellLength = curCell.length();
+      const insertDelta = new Delta();
 
       if (isRight) {
         insertDelta
@@ -640,11 +646,11 @@ class TableContainer extends Container {
                 CELL_DEFAULT,
                 {
                   row: rowFormats.row,
-                  cell: cellId()
-                }
+                  cell: cellId(),
+                },
               )
             }
-          )
+          );
       } else {
         insertDelta
           .retain(curCellIndex + rowIndex + 1)
@@ -656,188 +662,187 @@ class TableContainer extends Container {
                 CELL_DEFAULT,
                 {
                   row: rowFormats.row,
-                  cell: cellId()
-                }
+                  cell: cellId(),
+                },
               )
             }
-          )
+          );
       }
 
-      insertNewCellsDelta = insertNewCellsDelta.compose(insertDelta)
-      rowIndex += 1
+      insertNewCellsDelta = insertNewCellsDelta.compose(insertDelta);
+      rowIndex += 1;
     })
 
     quill.updateContents(insertNewCellsDelta, Quill.sources.USER);
   }
 
   deleteColumn(index) {
-    const [body] = this.descendants(TableBody)
-    const [colGroup] = this.descendants(TableColGroup)
+    const [body] = this.descendants(TableBody);
+    const [colGroup] = this.descendants(TableColGroup);
     if (colGroup.children.length === 1) {
-      this.remove()
+      this.remove();
     } else {
-      colGroup.children.at(index).remove()
+      colGroup.children.at(index).remove();
       body.children.forEach(tableRow => {
-        tableRow.children.at(index).remove()
+        tableRow.children.at(index).remove();
       })
-      this.updateTableWidth()
+      this.updateTableWidth();
     }
   }
 
   insertRow(index, isBottom) {
-    const [tableBody] = this.descendants(TableBody)
-    const thisRow = tableBody.children.at(index)
-    const cellNumber = thisRow.children.length
-    const ref = isBottom ? thisRow.next : thisRow
-    const newRowId = rowId()
+    const [tableBody] = this.descendants(TableBody);
+    const thisRow = tableBody.children.at(index);
+    const cellNumber = thisRow.children.length;
+    const ref = isBottom ? thisRow.next : thisRow;
+    const newRowId = rowId();
 
     const tableRow = this.scroll.create(TableRow.blotName, {
-      row: newRowId
-    })
+      row: newRowId,
+    });
 
-    let tableCell
-    let cellLine
-    let empty
+    let tableCell;
+    let cellLine;
+    let empty;
     new Array(cellNumber).fill(0).forEach(() => {
-      const cell = cellId()
+      const cell = cellId();
       tableCell = this.scroll.create(
         TableCell.blotName,
         Object.assign({}, CELL_DEFAULT, {
           row: newRowId,
-          cell
+          cell,
         })
-      )
+      );
       cellLine = this.scroll.create(
         TableCellLine.blotName,
         Object.assign({}, CELL_DEFAULT, {
           row: newRowId,
-          cell
+          cell,
         })
-      )
-      empty = this.scroll.create(Break.blotName)
+      );
+      empty = this.scroll.create(Break.blotName);
 
-      cellLine.appendChild(empty)
-      tableCell.appendChild(cellLine)
-      tableRow.appendChild(tableCell)
+      cellLine.appendChild(empty);
+      tableCell.appendChild(cellLine);
+      tableRow.appendChild(tableCell);
     })
 
     if (ref) {
-      tableBody.insertBefore(tableRow, ref)
+      tableBody.insertBefore(tableRow, ref);
     } else {
-      tableBody.appendChild(tableRow)
+      tableBody.appendChild(tableRow);
     }
   }
 
   deleteRow(index) {
-    const [body] = this.descendants(TableBody)
+    const [body] = this.descendants(TableBody);
     if (body.children.length === 1) {
-      this.remove()
+      this.remove();
     } else {
-      body.children.at(index).remove()
+      body.children.at(index).remove();
     }
   }
 }
-TableContainer.blotName = "table-container"
-TableContainer.className = "clickup-table"
-TableContainer.tagName = "TABLE"
+TableContainer.blotName = "table-container";
+TableContainer.className = "clickup-table";
+TableContainer.tagName = "TABLE";
 
 class TableView extends Container {
   constructor(scroll, domNode) {
-    super(scroll, domNode)
-    const quill = Quill.find(scroll.domNode.parentNode)
+    super(scroll, domNode);
+    const quill = Quill.find(scroll.domNode.parentNode);
     domNode.addEventListener('scroll', (e) => {
-      const tableModule = quill.getModule('table')
+      const tableModule = quill.getModule('table');
       if (tableModule.columnTool) {
-        tableModule.columnTool.domNode.scrollLeft = e.target.scrollLeft
+        tableModule.columnTool.domNode.scrollLeft = e.target.scrollLeft;
 
         if (tableModule.columnTool.activeDropdown) {
-          tableModule.columnTool.activeDropdown.destroy()
+          tableModule.columnTool.activeDropdown.destroy();
         }
       }
-    }, false)
+    }, false);
   }
 
   table() {
-    return this.children.head
+    return this.children.head;
   }
 }
-TableView.blotName = "table-view"
-TableView.className = "clickup-table-view"
-TableView.tagName = "DIV"
+TableView.blotName = 'table-view';
+TableView.className = 'clickup-table-view';
+TableView.tagName = 'DIV';
 
 // Blots of List
 class ListContainer extends Container {
   static create(value) {
-    const node = super.create(value)
+    const node = super.create(value);
 
-    CELL_ATTRIBUTES
-      .concat(CELL_IDENTITY_KEYS)
+    CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat(['list'])
       .forEach(attrName => {
         if (value[attrName]) {
-          node.setAttribute(`data-${attrName}`, value[attrName])
+          node.setAttribute(`data-${attrName}`, value[attrName]);
         }
-      })
+      });
 
-    return node
+    return node;
   }
 
   static formats(domNode) {
-    const formats = {}
+    const formats = {};
 
     return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat(['list'])
-      .reduce((formats, attribute) => {
+      .reduce((result, attribute) => {
         if (domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined
+          result[attribute] =
+            domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats
-      }, formats)
+        return result;
+      }, formats);
   }
 
   formats() {
-    const formats = {}
+    const formats = {};
 
-    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
-      .reduce((formats, attribute) => {
+    return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).reduce(
+      (result, attribute) => {
         if (this.domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] = this.domNode.getAttribute(`data-${attribute}`) || undefined
+          result[attribute] =
+            this.domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats
-      }, formats)
+        return result;
+      },
+      formats,
+    );
   }
 
   optimize(context) {
-    const { row, cell, rowspan, colspan } = ListContainer.formats(this.domNode)
-    if (
-      row &&
-      !(this.parent instanceof TableCell)
-    ) {
+    const { row, cell, rowspan, colspan } = ListContainer.formats(this.domNode);
+    if (row && !(this.parent instanceof TableCell)) {
       this.wrap(TableCell.blotName, {
         row,
         cell,
         colspan,
-        rowspan
-      })
-    } else if (
-      this.parent instanceof TableCell
-    ) {
+        rowspan,
+      });
+    } else if (this.parent instanceof TableCell) {
       const hasDifferentCellChildren = this.children
         .map(child => {
-          const childFormats = typeof child.listFormats === 'function'
-              ? child.listFormats()
-              : typeof child.formats === 'function'
-                ? child.formats()
-                : {}
-          return cell === (childFormats['list'] && childFormats['list'].cell)
+          let childFormats = {};
+          if (typeof child.listFormats === 'function') {
+            childFormats = child.listFormats();
+          } else if (typeof child.formats === 'function') {
+            childFormats = child.formats();
+          }
+          return cell === (childFormats.list && childFormats.list.cell);
         })
-        .some(item => !item)
+        .some(item => !item);
       if (hasDifferentCellChildren) {
         this.unwrap();
       }
     }
 
-    super.optimize(context)
+    super.optimize(context);
   }
 }
 ListContainer.blotName = 'list-container';
@@ -846,71 +851,69 @@ ListContainer.tagName = 'OL';
 class ListItem extends Block {
   static create(value) {
     if (typeof value === 'string') {
-      value = { list: value }
+      value = { list: value };
     }
 
     const node = super.create(value);
-    CELL_IDENTITY_KEYS
-      .concat(CELL_ATTRIBUTES)
+    CELL_IDENTITY_KEYS.concat(CELL_ATTRIBUTES)
       .concat(['list'])
       .forEach(key => {
-        if (value[key]) node.setAttribute(`data-${key}`, value[key])
-      })
-    
+        if (value[key]) node.setAttribute(`data-${key}`, value[key]);
+      });
+
     if (value.list === 'toggled') {
-      node.setAttribute('data-toggle-id', value['toggle-id'] ? value['toggle-id'] : toggleListId())
+      node.setAttribute(
+        'data-toggle-id',
+        value['toggle-id'] ? value['toggle-id'] : toggleListId(),
+      );
     }
 
     return node;
   }
 
   static formats(domNode) {
-    const formats = {}
+    const formats = {};
     return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat(['list', 'toggle-id'])
-      .reduce((formats, attribute) => {
+      .reduce((result, attribute) => {
         if (domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined
+          result[attribute] =
+            domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats
-      }, formats)
+        return result;
+      }, formats);
   }
 
   constructor(scroll, domNode) {
     super(scroll, domNode);
     const ui = domNode.ownerDocument.createElement('span');
-    const format = this.statics.formats(domNode, scroll);
-    const quill = Quill.find(scroll.domNode.parentNode)
-    let uiPlaceHolder  = null
+    const quill = Quill.find(scroll.domNode.parentNode);
+    let uiPlaceHolder = null;
 
     if (this.isToggleListItem()) {
-      uiPlaceHolder = domNode.ownerDocument.createElement('span')
-      uiPlaceHolder.innerText = ListItem.DEFAULT_TOGGLE_PLACEHOLDER
+      uiPlaceHolder = domNode.ownerDocument.createElement('span');
+      uiPlaceHolder.innerText = ListItem.DEFAULT_TOGGLE_PLACEHOLDER;
     }
 
-    const placeholderClickHandler = e => {
+    const placeholderClickHandler = () => {
       if (!scroll.isEnabled()) return;
-      const index = quill.getIndex(this)
-      const listFormats = this.formats()
-      const newLineIndent = listFormats.indent ? (listFormats.indent + 1 ): 1
+      const index = quill.getIndex(this);
+      const listFormats = this.formats();
+      const newLineIndent = listFormats.indent ? listFormats.indent + 1 : 1;
       const newLineFormats = {
         ...listFormats,
         indent: newLineIndent,
-        list: Object.assign(
-          {},
-          listFormats.list,
-          { list: 'none' }
-        )
-      }
+        list: Object.assign({}, listFormats.list, { list: 'none' }),
+      };
 
       const delta = new Delta()
         .retain(index + this.length())
         .insert('\n', newLineFormats);
       quill.updateContents(delta, Quill.sources.USER);
       quill.setSelection(index + this.length(), Quill.sources.SILENT);
-    }
+    };
 
-    const storageModule = quill.getModule('storage')
+    const storageModule = quill.getModule('storage');
     const listEventHandler = e => {
       if (!scroll.isEnabled()) return;
       const format = this.statics.formats(domNode, scroll);
@@ -921,35 +924,35 @@ class ListItem extends Block {
         this.format('list', 'checked');
         e.preventDefault();
       } else if (format.list === 'toggled') {
-        const isExpanded = this.isThisItemExpanded()
+        const isExpanded = this.isThisItemExpanded();
         if (isExpanded) {
-          this.collapseItem()
+          this.collapseItem();
           if (storageModule) {
-            storageModule.removeCollapsedToggleList(format['toggle-id'])
+            storageModule.removeCollapsedToggleList(format['toggle-id']);
           }
         } else {
-          this.expandItem()
+          this.expandItem();
           if (storageModule) {
-            storageModule.addExpandedToggleList(format['toggle-id'])
+            storageModule.addExpandedToggleList(format['toggle-id']);
           }
         }
         // update height of table row tool if this list was in a table
-        const editorElem = scroll.domNode
+        const editorElem = scroll.domNode;
         if (quill && editorElem) {
-          const tableModule = quill.getModule('table')
+          const tableModule = quill.getModule('table');
           if (tableModule && tableModule.table && tableModule.rowTool) {
-            window.setTimeout(tableModule.rowTool.updateToolCells(), 0)
+            window.setTimeout(tableModule.rowTool.updateToolCells(), 0);
           }
         }
       }
     };
-    
+
     ui.addEventListener('click', listEventHandler);
     this.attachUI(ui);
 
     if (uiPlaceHolder) {
       uiPlaceHolder.addEventListener('click', placeholderClickHandler);
-      this.attachUiPlaceHolder(uiPlaceHolder)
+      this.attachUiPlaceHolder(uiPlaceHolder);
     }
   }
 
@@ -964,8 +967,8 @@ class ListItem extends Block {
   }
 
   format(name, value) {
-    const curFormats = ListItem.formats(this.domNode)
-    const { row, cell, rowspan, colspan } = curFormats
+    const curFormats = ListItem.formats(this.domNode);
+    const { row, cell, rowspan, colspan } = curFormats;
 
     if (name === ListItem.blotName) {
       if (value) {
@@ -977,404 +980,450 @@ class ListItem extends Block {
             row,
             cell,
             rowspan,
-            colspan
-          })
+            colspan,
+          });
         }
+      } else if (row && cell) {
+        this.replaceWith(TableCellLine.blotName, {
+          row,
+          cell,
+          rowspan,
+          colspan,
+        });
       } else {
-        if (row && cell) {
-          this.replaceWith(TableCellLine.blotName, {
-            row,
-            cell,
-            rowspan,
-            colspan
-          })
-        } else {
-          super.format(name, value)
-        }
+        super.format(name, value);
       }
     } else if (name === TableCellLine.blotName) {
       if (value) {
-        this.replaceWith(TableCellLine.blotName, value)
+        this.replaceWith(TableCellLine.blotName, value);
       } else {
-        super.format(name, value)
+        super.format(name, value);
       }
     } else {
-      super.format(name, value)
+      super.format(name, value);
     }
   }
 
   getListItemChildren() {
-    const children = []
+    const children = [];
     const curFormat = this.listFormats();
-    const curIndent = curFormat.indent || 0
-    let next = this.next
-    let nextFormat = (next && typeof next.listFormats === 'function' && next.listFormats()) || {}
-    let nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+    const curIndent = curFormat.indent || 0;
+    let { next } = this;
+    let nextIndent =
+      (next && typeof next.getIndent === 'function' && next.getIndent()) || 0;
     while (
       next &&
-      (next.statics.blotName === ListItem.blotName || next.statics.blotName === ListBlockWrapper.blotName)
+      (next.statics.blotName === ListItem.blotName ||
+        next.statics.blotName === 'list-block-wrapper')
     ) {
       if (nextIndent - curIndent > 0) {
-        children.push(next)
-        next = next.next
-        nextFormat = (next && typeof next.listFormats === 'function' && next.listFormats()) || {}
-        nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+        children.push(next);
+        ({ next } = next);
+        nextIndent =
+          (next && typeof next.getIndent === 'function' && next.getIndent()) ||
+          0;
       } else {
-        next = null
+        next = null;
       }
     }
-    return children
+    return children;
   }
 
   isToggleListItem() {
-    const formats = this.listFormats()
-    return formats && formats.list && formats.list.list === 'toggled'
+    const formats = this.listFormats();
+    return formats && formats.list && formats.list.list === 'toggled';
   }
 
   isThisItemExpanded() {
-    return this.isToggleListItem() &&
-      !!this.domNode.getAttribute('data-list-toggle')
+    return (
+      this.isToggleListItem() && !!this.domNode.getAttribute('data-list-toggle')
+    );
   }
 
   hasToggleChildren() {
-    const curIndent = this.getIndent()
+    const curIndent = this.getIndent();
 
     if (this.next) {
-      const nextFormats = (typeof this.next.listFormats === 'function' && this.next.listFormats()) || {}
-      const nextIndent = (typeof this.next.getIndent === 'function' && this.next.getIndent()) || 0
-      return nextFormats &&
-        nextFormats.list &&
-        nextIndent &&
-        nextIndent > curIndent
-    } else {
-      return false
+      const nextFormats =
+        (typeof this.next.listFormats === 'function' &&
+          this.next.listFormats()) ||
+        {};
+      const nextIndent =
+        (typeof this.next.getIndent === 'function' && this.next.getIndent()) ||
+        0;
+      return (
+        nextFormats && nextFormats.list && nextIndent && nextIndent > curIndent
+      );
     }
+    return false;
   }
 
   expandItem() {
     if (this.isToggleListItem()) {
-      this.domNode.setAttribute('data-list-toggle', true)
-      this.toggleChildren()
+      this.domNode.setAttribute('data-list-toggle', true);
+      this.toggleChildren();
     }
   }
 
   collapseItem() {
     if (this.isToggleListItem()) {
-      this.domNode.removeAttribute('data-list-toggle')
-      this.toggleChildren()
+      this.domNode.removeAttribute('data-list-toggle');
+      this.toggleChildren();
     }
   }
 
   getToggleListItemChildren() {
-    if (!this.isToggleListItem()) return []
-    const children = []
-    const curIndent = this.getIndent()
-    let next = this.next
-    let nextFormat = (next && typeof next.listFormats === 'function' && next.listFormats()) || {}
-    let nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+    if (!this.isToggleListItem()) {
+      return [];
+    }
+    const children = [];
+    const curIndent = this.getIndent();
+    let { next } = this;
+    let nextIndent =
+      (next && typeof next.getIndent === 'function' && next.getIndent()) || 0;
     while (
       next &&
-      (next.statics.blotName === ListItem.blotName || next.statics.blotName === ListBlockWrapper.blotName)
+      (next.statics.blotName === ListItem.blotName ||
+        next.statics.blotName === 'list-block-wrapper')
     ) {
       if (nextIndent - curIndent > 0) {
-        children.push(next)
-        next = next.next
-        nextFormat = (next && typeof next.listFormats === 'function' && next.listFormats()) || {}
-        nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+        children.push(next);
+        ({ next } = next);
+        nextIndent =
+          (next && typeof next.getIndent === 'function' && next.getIndent()) ||
+          0;
       } else {
-        next = null
+        next = null;
       }
     }
-    return children
+    return children;
   }
 
   toggleChildren() {
     const curFormat = this.listFormats();
     const curIndent = this.getIndent();
     if (curFormat.list.list === 'toggled') {
-      let next = this.next
-      let nextFormat = (next && typeof next.listFormats === 'function' && next.listFormats()) || {}
-      let nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+      let { next } = this;
+      let nextIndent =
+        (next && typeof next.getIndent === 'function' && next.getIndent()) || 0;
       while (
         next &&
-        (next.statics.blotName === ListItem.blotName || next.statics.blotName === ListBlockWrapper.blotName)
+        (next.statics.blotName === ListItem.blotName ||
+          next.statics.blotName === 'list-block-wrapper')
       ) {
         if (nextIndent - curIndent > 0) {
-          next.optimize()
-          next = next.next
-          nextFormat = (next && typeof next.listFormats === 'function' && next.listFormats()) || {}
-          nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+          next.optimize();
+          ({ next } = next);
+          nextIndent =
+            (next &&
+              typeof next.getIndent === 'function' &&
+              next.getIndent()) ||
+            0;
         } else {
-          next = null
+          next = null;
         }
       }
     }
   }
 
   getToggleParents() {
-    let prev = this.prev
-    let prevFormat = (prev && typeof prev.listFormats === 'function' && prev.listFormats()) || {}
-    let prevIndent = (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0
-    let parent = this
-    let parentFormat = (parent && typeof parent.listFormats === 'function' && parent.listFormats()) || {}
-    let parentIndent = (parent && typeof parent.getIndent === 'function' && parent.getIndent()) || 0
-    const parents = []
+    let { prev } = this;
+    let prevIndent =
+      (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0;
+    let parent = this;
+    let parentIndent =
+      (parent &&
+        typeof parent.getIndent === 'function' &&
+        parent.getIndent()) ||
+      0;
+    const parents = [];
     while (
       prev &&
-      (prev.statics.blotName === ListItem.blotName || prev.statics.blotName === ListBlockWrapper.blotName)
+      (prev.statics.blotName === ListItem.blotName ||
+        prev.statics.blotName === 'list-block-wrapper')
     ) {
       if (parentIndent - prevIndent > 0) {
-        parent = prev
-        parentFormat = prevFormat
-        parentIndent = prevIndent
-        parents.push(prev)
+        parent = prev;
+        parentIndent = prevIndent;
+        parents.push(prev);
       }
 
-      prev = prev.prev
-      prevFormat = (prev && typeof prev.listFormats === 'function' && prev.listFormats()) || {}
-      prevIndent = (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0
+      ({ prev } = prev);
+      prevIndent =
+        (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0;
     }
-    return parents
+    return parents;
   }
 
   optimize(context) {
-    const { row, cell, rowspan, colspan } = ListItem.formats(this.domNode)
-    if (this.statics.requiredContainer &&
-      !(this.parent instanceof this.statics.requiredContainer)) {
+    const { row, cell, rowspan, colspan } = ListItem.formats(this.domNode);
+    if (
+      this.statics.requiredContainer &&
+      !(this.parent instanceof this.statics.requiredContainer)
+    ) {
       this.wrap(this.statics.requiredContainer.blotName, {
         row,
         cell,
         colspan,
-        rowspan
-      })
+        rowspan,
+      });
     }
 
     // set own visibility
-    const parents = this.getToggleParents()
+    const parents = this.getToggleParents();
     const isExpanded = parents.every(parent => {
-      return parent.domNode.getAttribute('data-list-toggle') ||
+      return (
+        parent.domNode.getAttribute('data-list-toggle') ||
         !parent.isToggleListItem ||
         !parent.isToggleListItem()
-    })
+      );
+    });
 
     css(this.domNode, {
-      display: `${isExpanded ? 'block' : 'none'}`
-    })
+      display: `${isExpanded ? 'block' : 'none'}`,
+    });
     css(this.uiNode, {
-      opacity: `${ (!this.isToggleListItem() || this.hasToggleChildren()) ? '1' : '0.5' }`
-    })
-    
+      opacity: `${
+        !this.isToggleListItem() || this.hasToggleChildren() ? '1' : '0.5'
+      }`,
+    });
+
     // set placeholder visibility
     if (this.placeholder) {
-      const lineHeight = window.getComputedStyle(this.domNode)
-        .getPropertyValue('line-height')
+      const lineHeight = window
+        .getComputedStyle(this.domNode)
+        .getPropertyValue('line-height');
 
       css(this.domNode, {
         marginBottom: `${
           this.isToggleListItem() &&
           !this.hasToggleChildren() &&
-          this.isThisItemExpanded() ? lineHeight : ''
-        }`
-      })
+          this.isThisItemExpanded()
+            ? lineHeight
+            : ''
+        }`,
+      });
 
       css(this.placeholder, {
         display: `${
           this.isToggleListItem() &&
           !this.hasToggleChildren() &&
-          this.isThisItemExpanded() ? 'block' : 'none'
-        }`
-      })
+          this.isThisItemExpanded()
+            ? 'block'
+            : 'none'
+        }`,
+      });
     }
 
-    super.optimize(context)
+    super.optimize(context);
   }
 
-  listFormats () {
-    return this.formats()
+  listFormats() {
+    return this.formats();
   }
 
   getIndent() {
-    const listFormats = this.listFormats()
-    return listFormats['indent'] || 0
+    const listFormats = this.listFormats();
+    return listFormats.indent || 0;
   }
 }
 ListItem.blotName = 'list';
 ListItem.tagName = 'LI';
-ListItem.DEFAULT_TOGGLE_PLACEHOLDER = 'Empty. Click or drag text/images inside'
+ListItem.DEFAULT_TOGGLE_PLACEHOLDER = 'Empty. Click or drag text/images inside';
 
 class ListBlockWrapper extends Container {
   checkMerge() {
     if (super.checkMerge() && this.next.children.head != null) {
-      return this.children.head.statics.blotName === this.next.children.head.statics.blotName;
+      return (
+        this.children.head.statics.blotName ===
+        this.next.children.head.statics.blotName
+      );
     }
-    return false
+    return false;
   }
 
   static create(value) {
-    const node = super.create(value)
+    const node = super.create(value);
 
-    CELL_ATTRIBUTES
-      .concat(CELL_IDENTITY_KEYS)
+    CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat([ListItem.blotName, WRAPPER_INDENT_KEY])
       .forEach(attrName => {
         if (value[attrName]) {
-          node.setAttribute(`data-${attrName}`, value[attrName])
+          node.setAttribute(`data-${attrName}`, value[attrName]);
         }
-      })
+      });
 
     if (value[WRAPPER_INDENT_KEY]) {
-      node.classList.add(`ql-wrapper-indent-${value[WRAPPER_INDENT_KEY]}`)
+      node.classList.add(`ql-wrapper-indent-${value[WRAPPER_INDENT_KEY]}`);
     }
 
-    return node
+    return node;
   }
 
   static addAllowChildren(Blot) {
     if (ListBlockWrapper.allowedChildren.indexOf(Blot) < 0) {
-      ListBlockWrapper.allowedChildren.push(Blot)
+      ListBlockWrapper.allowedChildren.push(Blot);
     }
   }
 
   listFormats() {
-    const formats = {}
+    const formats = {};
 
     if (this.domNode.hasAttribute(`data-${WRAPPER_INDENT_KEY}`)) {
-      formats[WRAPPER_INDENT_KEY] = parseInt(this.domNode.getAttribute(`data-${WRAPPER_INDENT_KEY}`), 10) || undefined
+      formats[WRAPPER_INDENT_KEY] =
+        parseInt(this.domNode.getAttribute(`data-${WRAPPER_INDENT_KEY}`), 10) ||
+        undefined;
     }
 
     return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat([ListItem.blotName])
-      .reduce((formats, attribute) => {
+      .reduce((result, attribute) => {
         if (this.domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] = this.domNode.getAttribute(`data-${attribute}`) || undefined
+          result[attribute] =
+            this.domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats
-      }, formats)
+        return result;
+      }, formats);
   }
 
   getListItemChildren() {
-    const children = []
-    const curIndent = this.getIndent()
-    let next = this.next
-    let nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+    const children = [];
+    const curIndent = this.getIndent();
+    let { next } = this;
+    let nextIndent =
+      (next && typeof next.getIndent === 'function' && next.getIndent()) || 0;
     while (
       next &&
-      (next.statics.blotName === ListItem.blotName || next.statics.blotName === ListBlockWrapper.blotName)
+      (next.statics.blotName === ListItem.blotName ||
+        next.statics.blotName === ListBlockWrapper.blotName)
     ) {
       if (nextIndent - curIndent > 0) {
-        children.push(next)
-        next = next.next
-        nextIndent = (next && typeof next.getIndent === 'function' && next.getIndent()) || 0
+        children.push(next);
+        ({ next } = next);
+        nextIndent =
+          (next && typeof next.getIndent === 'function' && next.getIndent()) ||
+          0;
       } else {
-        next = null
+        next = null;
       }
     }
-    return children
+    return children;
   }
 
   isToggleListItem() {
-    return false
+    return false;
   }
 
   isThisItemExpanded() {
-    return false
+    return false;
   }
 
   hasToggleChildren() {
-    const curIndent = this.getIndent()
+    const curIndent = this.getIndent();
 
     if (this.next) {
-      const nextFormats = (typeof this.next.listFormats === 'function' && this.next.listFormats()) || {}
-      const nextIndent = (typeof this.next.getIndent === 'function' && this.next.getIndent()) || 0
-      return nextFormats &&
-        nextFormats.list &&
-        nextIndent &&
-        nextIndent > curIndent
-    } else {
-      return false
+      const nextFormats =
+        (typeof this.next.listFormats === 'function' &&
+          this.next.listFormats()) ||
+        {};
+      const nextIndent =
+        (typeof this.next.getIndent === 'function' && this.next.getIndent()) ||
+        0;
+      return (
+        nextFormats && nextFormats.list && nextIndent && nextIndent > curIndent
+      );
     }
+    return false;
   }
 
   expandItem() {
-    return false
+    return false;
   }
 
   collapseItem() {
-    return false
+    return false;
   }
 
   getToggleListItemChildren() {
-    return []
+    return [];
   }
 
   toggleChildren() {
-    return false
+    return false;
   }
 
   getToggleParents() {
-    let prev = this.prev
-    let prevFormat = (prev && typeof prev.listFormats === 'function' && prev.listFormats()) || {}
-    let prevIndent = (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0
-    let parent = this
-    let parentFormat = (parent && typeof parent.listFormats === 'function' && parent.listFormats()) || {}
-    let parentIndent = (parent && typeof parent.getIndent === 'function' && parent.getIndent()) || 0
-    const parents = []
+    let { prev } = this;
+    let prevIndent =
+      (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0;
+    let parent = this;
+    let parentIndent =
+      (parent &&
+        typeof parent.getIndent === 'function' &&
+        parent.getIndent()) ||
+      0;
+    const parents = [];
     while (
       prev &&
-      (prev.statics.blotName === ListItem.blotName || prev.statics.blotName === ListBlockWrapper.blotName)
+      (prev.statics.blotName === ListItem.blotName ||
+        prev.statics.blotName === ListBlockWrapper.blotName)
     ) {
       if (parentIndent - prevIndent > 0) {
-        parent = prev
-        parentFormat = prevFormat
-        parentIndent = prevIndent
-        parents.push(prev)
+        parent = prev;
+        parentIndent = prevIndent;
+        parents.push(prev);
       }
 
-      prev = prev.prev
-      prevFormat = (prev && typeof prev.listFormats === 'function' && prev.listFormats()) || {}
-      prevIndent = (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0
+      ({ prev } = prev);
+      prevIndent =
+        (prev && typeof prev.getIndent === 'function' && prev.getIndent()) || 0;
     }
-    return parents
+    return parents;
   }
 
   optimize(context) {
     // if has different children, unwrap.
     const hasDifferentChildren = this.children
-      .map(child => child.statics.blotName === this.children.head.statics.blotName)
-      .some(item => !item)
-    const { row, cell, rowspan, colspan } = this.listFormats()
-    if (this.statics.requiredContainer &&
-      !(this.parent instanceof this.statics.requiredContainer)) {
+      .map(
+        child => child.statics.blotName === this.children.head.statics.blotName,
+      )
+      .some(item => !item);
+    const { row, cell, rowspan, colspan } = this.listFormats();
+    if (
+      this.statics.requiredContainer &&
+      !(this.parent instanceof this.statics.requiredContainer)
+    ) {
       this.wrap(this.statics.requiredContainer.blotName, {
         row,
         cell,
         colspan,
-        rowspan
-      })
+        rowspan,
+      });
     } else if (hasDifferentChildren) {
       this.unwrap();
     }
 
     // set own visibility
-    const parents = this.getToggleParents()
+    const parents = this.getToggleParents();
     const isExpanded = parents.every(parent => {
-      return parent.domNode.getAttribute('data-list-toggle') ||
-        (
-          parent.listFormats() && parent.listFormats().list &&
-          parent.listFormats().list.list !== 'toggled'
-        )
-    })
+      return (
+        parent.domNode.getAttribute('data-list-toggle') ||
+        (parent.listFormats() &&
+          parent.listFormats().list &&
+          parent.listFormats().list.list !== 'toggled')
+      );
+    });
 
     css(this.domNode, {
-      display: `${isExpanded ? 'block' : 'none'}`
-    })
+      display: `${isExpanded ? 'block' : 'none'}`,
+    });
 
-    super.optimize(context)
+    super.optimize(context);
   }
 
   getIndent() {
-    const listFormats = this.listFormats()
-    return listFormats[WRAPPER_INDENT_KEY] || 0
+    const listFormats = this.listFormats();
+    return listFormats[WRAPPER_INDENT_KEY] || 0;
   }
 }
 ListBlockWrapper.blotName = 'list-block-wrapper';
@@ -1386,46 +1435,45 @@ ListItem.requiredContainer = ListContainer;
 ListBlockWrapper.requiredContainer = ListContainer;
 ListBlockWrapper.allowedChildren = [];
 
-TableView.allowedChildren = [TableContainer]
-TableContainer.requiredContainer = TableView
+TableView.allowedChildren = [TableContainer];
+TableContainer.requiredContainer = TableView;
 
-TableContainer.allowedChildren = [TableBody, TableColGroup]
-TableBody.requiredContainer = TableContainer
+TableContainer.allowedChildren = [TableBody, TableColGroup];
+TableBody.requiredContainer = TableContainer;
 
-TableBody.allowedChildren = [TableRow]
-TableRow.requiredContainer = TableBody
+TableBody.allowedChildren = [TableRow];
+TableRow.requiredContainer = TableBody;
 
-TableRow.allowedChildren = [TableCell]
-TableCell.requiredContainer = TableRow
+TableRow.allowedChildren = [TableCell];
+TableCell.requiredContainer = TableRow;
 
-TableCell.allowedChildren = [TableCellLine, ListContainer]
-TableCellLine.requiredContainer = TableCell
+TableCell.allowedChildren = [TableCellLine, ListContainer];
+TableCellLine.requiredContainer = TableCell;
 
-TableColGroup.allowedChildren = [TableCol]
-TableColGroup.requiredContainer = TableContainer
+TableColGroup.allowedChildren = [TableCol];
+TableColGroup.requiredContainer = TableContainer;
 
-TableCol.requiredContainer = TableColGroup
-
+TableCol.requiredContainer = TableColGroup;
 
 function rowId() {
   const id = Math.random()
     .toString(36)
-    .slice(2, 8)
-  return `row-${id}`
+    .slice(2, 8);
+  return `row-${id}`;
 }
 
 function cellId() {
   const id = Math.random()
     .toString(36)
-    .slice(2, 8)
-  return `cell-${id}`
+    .slice(2, 8);
+  return `cell-${id}`;
 }
 
 function toggleListId() {
   const id = Math.random()
     .toString(36)
-    .slice(2, 8)
-  return `list-${id}`
+    .slice(2, 8);
+  return `list-${id}`;
 }
 
 export {
@@ -1438,19 +1486,15 @@ export {
   TableBody,
   TableContainer,
   TableView,
-
   ListItem,
   ListBlockWrapper,
   ListContainer,
-
   // identity getters
   rowId,
   cellId,
   toggleListId,
-
   // attributes
   CELL_IDENTITY_KEYS,
   CELL_ATTRIBUTES,
   SUPPORTED_LIST_TYPES,
-}
-
+};

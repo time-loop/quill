@@ -252,13 +252,12 @@ function convertListHTML(items, lastIndent, types) {
           indent,
           types,
         )}`;
-      } else {
-        return `<${tag}><li${attribute}>${convertHTML(
-          child,
-          offset,
-          length,
-        )}${convertListHTML(rest, indent, types)}`;
       }
+      return `<${tag}><li${attribute}>${convertHTML(
+        child,
+        offset,
+        length,
+      )}${convertListHTML(rest, indent, types)}`;
     }
     return `<${tag}><li>${convertListHTML(items, lastIndent + 1, types)}`;
   }

@@ -439,7 +439,6 @@ class Quill {
   removeInstance() {
     instances.delete(this.container);
   }
-  
 }
 Quill.DEFAULTS = {
   bounds: null,

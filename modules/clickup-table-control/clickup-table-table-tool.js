@@ -1,4 +1,3 @@
-import Quill from '../../quill'
 import { css } from './utils'
 import IconManager from './clickup-icon-manager'
 import Dropdown from './clickup-table-table-dropdown'

@@ -21,8 +21,7 @@ import { DirectionAttribute, DirectionStyle } from '../formats/direction';
 import { FontStyle } from '../formats/font';
 import { SizeStyle } from '../formats/size';
 // clickup: utils
-import { _omit } from './clickup-table/utils';
-import Link from '../formats/link';
+import { omit } from './clickup-table/utils';
 
 const debug = logger('quill:clipboard');
 
@@ -439,17 +438,14 @@ function matchIndent(node, delta, scroll) {
 // clickup: modify the matcher of list
 function matchList(node, delta) {
   const list = node.tagName === 'OL' ? 'ordered' : 'bullet';
-  
   return delta.reduce((newDelta, op) => {
-    if (op.attributes && op.attributes['list']) {
+    if (op.attributes && op.attributes.list) {
       newDelta.insert(
         op.insert,
         Object.assign(
           {},
-          _omit(op.attributes, ['list-container']),
-          op.attributes['list']['list']
-            ? {}
-            : { list: { list } }
+          omit(op.attributes, ['list-container']),
+          op.attributes.list.list ? {} : { list: { list } },
         ),
       );
     } else {
@@ -507,16 +503,6 @@ function matchStyles(node, delta) {
     return new Delta().insert('\t').concat(delta);
   }
   return delta;
-}
-
-function matchTable(node, delta) {
-  const table =
-    node.parentNode.tagName === 'TABLE'
-      ? node.parentNode
-      : node.parentNode.parentNode;
-  const rows = Array.from(table.querySelectorAll('tr'));
-  const row = rows.indexOf(node) + 1;
-  return applyFormat(delta, 'table', row);
 }
 
 function matchText(node, delta) {

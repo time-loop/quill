@@ -5,6 +5,10 @@ const config = {
   whitelist: ['true'],
 };
 
-const voidDetectAttribute = new Attributor('void-detect', 'data-void-detect', config);
+const voidDetectAttribute = new Attributor(
+  'void-detect',
+  'data-void-detect',
+  config,
+);
 
-export { voidDetectAttribute };
+export default voidDetectAttribute;

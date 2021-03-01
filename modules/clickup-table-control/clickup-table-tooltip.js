@@ -1,4 +1,3 @@
-import Quill from '../../quill'
 import { css } from './utils'
 
 const TOOLTIP_HEIGHT = 24

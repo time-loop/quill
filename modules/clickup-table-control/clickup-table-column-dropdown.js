@@ -1,4 +1,4 @@
-import Quill from '../../quill'
+import Quill from '../../core/quill';
 import { css } from './utils'
 import IconManager from './clickup-icon-manager'
 

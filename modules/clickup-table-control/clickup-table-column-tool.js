@@ -1,5 +1,5 @@
-import Quill from '../../quill'
-import { css, getEventComposedPath } from './utils'
+import Quill from '../../core/quill';
+import { css } from './utils'
 import Dropdown from './clickup-table-column-dropdown'
 import TableTooltip from './clickup-table-tooltip'
 
