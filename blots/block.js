@@ -1,5 +1,4 @@
 import extend from 'extend';
-import { v4 as uuid } from 'uuid';
 import Delta from 'quill-delta';
 import {
   AttributorStore,
@@ -11,7 +10,6 @@ import {
 import Break from './break';
 import Inline from './inline';
 import TextBlot from './text';
-import BlockIdentityAttribute from '../formats/block-id';
 
 const NEWLINE_LENGTH = 1;
 
@@ -99,10 +97,6 @@ class Block extends BlockBlot {
   optimize(context) {
     super.optimize(context);
     this.cache = {};
-    const curFormats = this.formats();
-    if (!curFormats || !curFormats[BlockIdentityAttribute.attrName]) {
-      this.format(BlockIdentityAttribute.attrName, `block-${uuid()}`);
-    }
   }
 
   path(index) {
@@ -130,7 +124,7 @@ class Block extends BlockBlot {
   }
 }
 Block.blotName = 'block';
-Block.tagName = 'DIV';
+Block.tagName = 'P';
 Block.defaultChild = Break;
 Block.allowedChildren = [Break, Inline, EmbedBlot, TextBlot];
 
