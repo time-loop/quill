@@ -405,11 +405,6 @@ window.onload = () => {
     theme: 'snow',
     modules: {
       toolbar: toolbarOptions,
-      dragDropBlocks: {
-        anchorOffsetLeft: () => 1,
-        anchorAlignCenter: () => true,
-        dragStartCallback: (e, draggingBlot) => console.log(draggingBlot),
-      },
       table: {
         tableTools: {
           zIndex: 100,
