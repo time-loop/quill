@@ -1,6 +1,7 @@
 import clone from 'clone';
 import equal from 'deep-equal';
 import extend from 'extend';
+import { v4 as uuid } from 'uuid';
 import Delta, { AttributeMap } from 'quill-delta';
 import { EmbedBlot, Scope, TextBlot } from 'parchment';
 import Quill from '../core/quill';
@@ -283,6 +284,7 @@ class Keyboard extends Module {
       .retain(context.line.length() - context.offset - 1)
       .retain(1, {
         ...lineFormats,
+        'block-id': `block-${uuid()}`,
       });
     this.quill.updateContents(delta, Quill.sources.USER);
     this.quill.setSelection(range.index + 1, Quill.sources.SILENT);
