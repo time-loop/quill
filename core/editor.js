@@ -5,8 +5,10 @@ import Delta, { AttributeMap } from 'quill-delta';
 import { LeafBlot } from 'parchment';
 import { Range } from './selection';
 import CursorBlot from '../blots/cursor';
+// eslint-disable-next-line
 import Block, { BlockEmbed, bubbleFormats } from '../blots/block';
 import Break from '../blots/break';
+// eslint-disable-next-line
 import Header from '../formats/header';
 import TextBlot, { escapeText } from '../blots/text';
 

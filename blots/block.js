@@ -12,6 +12,8 @@ import Break from './break';
 import Inline from './inline';
 import TextBlot from './text';
 import BlockIdentityAttribute from '../formats/block-id';
+// eslint-disable-next-line
+import Quill from '../core/quill';
 
 const NEWLINE_LENGTH = 1;
 
@@ -100,7 +102,10 @@ class Block extends BlockBlot {
     super.optimize(context);
     this.cache = {};
     const curFormats = this.formats();
-    if (!curFormats || !curFormats[BlockIdentityAttribute.attrName]) {
+    if (
+      Quill.enabledBlockId &&
+      (!curFormats || !curFormats[BlockIdentityAttribute.attrName])
+    ) {
       this.format(BlockIdentityAttribute.attrName, `block-${uuid()}`);
     }
   }
@@ -130,7 +135,7 @@ class Block extends BlockBlot {
   }
 }
 Block.blotName = 'block';
-Block.tagName = 'DIV';
+Block.tagName = 'P';
 Block.defaultChild = Break;
 Block.allowedChildren = [Break, Inline, EmbedBlot, TextBlot];
 

@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import Block from '../blots/block';
 
 class Header extends Block {

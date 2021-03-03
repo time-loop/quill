@@ -401,6 +401,7 @@ const toolbarOptions = [
 ];
 
 window.onload = () => {
+  Quill.enableBlockIdMode(false);
   const quill = new Quill('#editor', {
     theme: 'snow',
     modules: {
