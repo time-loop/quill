@@ -932,7 +932,8 @@ class ListItem extends Block {
       quill.setSelection(index + this.length(), Quill.sources.SILENT);
     };
 
-    const storageModule = quill.getModule('storage');
+    const storageModule = quill ? quill.getModule('storage') : null;
+
     const listEventHandler = e => {
       if (!scroll.isEnabled()) return;
       const format = this.statics.formats(domNode, scroll);

@@ -416,27 +416,27 @@ window.onload = () => {
     },
   });
 
-  const config = {
-    app: 'quilljs',
-    username: (Math.random() * 1000).toFixed(0),
-    autoStart: true,
-    showUI: false,
-    showCursor: true,
-    cursorAlwaysOn: true,
-    editor: quill,
-    docId: 'id',
-  };
-  const codox = new Codox();
-  codox.start(config);
+  // const config = {
+  //   app: 'quilljs',
+  //   username: (Math.random() * 1000).toFixed(0),
+  //   autoStart: true,
+  //   showUI: false,
+  //   showCursor: true,
+  //   cursorAlwaysOn: true,
+  //   editor: quill,
+  //   docId: 'id',
+  // };
+  // const codox = new Codox();
+  // codox.start(config);
 
-  quill.on('text-change', (newDelta, oldContents, source) => {
-    console.log(newDelta);
-  });
+  // quill.on('text-change', (newDelta, oldContents, source) => {
+  //   console.log(newDelta);
+  // });
 
-  quill.clipboard.addMatcher(Node.TEXT_NODE, (node, delta) => {
-    console.log(delta);
-    return delta;
-  });
+  // quill.clipboard.addMatcher(Node.TEXT_NODE, (node, delta) => {
+  //   console.log(delta);
+  //   return delta;
+  // });
 
   window.quill = quill;
   // test parse old table delta to new
@@ -456,6 +456,14 @@ window.onload = () => {
     'click',
     () => {
       console.log(quill.getContents());
+    },
+    false,
+  );
+
+  document.querySelector('#get-html').addEventListener(
+    'click',
+    () => {
+      console.log(quill.editor.getHTML(2, 20));
     },
     false,
   );
