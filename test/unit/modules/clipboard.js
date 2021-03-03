@@ -198,8 +198,8 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('One\n', { list: 'ordered' })
-          .insert('Alpha\n', { list: 'ordered', indent: 1 }),
+          .insert('One\n', { list: { list: 'ordered' } })
+          .insert('Alpha\n', { list: { list: 'ordered' }, indent: 1 }),
       );
     });
 
@@ -210,9 +210,9 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('One\n', { list: 'ordered' })
-          .insert('Alpha\nBeta\n', { list: 'ordered', indent: 1 })
-          .insert('I\n', { list: 'ordered', indent: 2 }),
+          .insert('One\n', { list: { list: 'ordered' } })
+          .insert('Alpha\nBeta\n', { list: { list: 'ordered' }, indent: 1 })
+          .insert('I\n', { list: { list: 'ordered' }, indent: 2 }),
       );
     });
 
@@ -223,9 +223,9 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('One\n', { list: 'bullet' })
-          .insert('Alpha\nBeta\n', { list: 'bullet', indent: 1 })
-          .insert('I\n', { list: 'bullet', indent: 2 }),
+          .insert('One\n', { list: { list: 'bullet' } })
+          .insert('Alpha\nBeta\n', { list: { list: 'bullet' }, indent: 1 })
+          .insert('I\n', { list: { list: 'bullet' }, indent: 2 }),
       );
     });
 
@@ -236,9 +236,9 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('iiii\n', { list: 'ordered', indent: 2 })
-          .insert('bbbb\n', { list: 'ordered', indent: 1 })
-          .insert('2222\n', { list: 'ordered' }),
+          .insert('iiii\n', { list: { list: 'ordered' }, indent: 2 })
+          .insert('bbbb\n', { list: { list: 'ordered' }, indent: 1 })
+          .insert('2222\n', { list: { list: 'ordered' } }),
       );
     });
 

@@ -10,16 +10,16 @@ describe('List', function() {
       <p>5678</p>
       <p>0123</p>`,
     );
-    editor.formatText(9, 1, { list: 'ordered' });
+    editor.formatText(9, 1, { list: { list: 'ordered' } });
     expect(editor.getDelta()).toEqual(
       new Delta()
         .insert('0123\n5678')
-        .insert('\n', { list: 'ordered' })
+        .insert('\n', { list: { list: 'ordered' } })
         .insert('0123\n'),
     );
     expect(this.container).toEqualHTML(`
       <p>0123</p>
-      <ol><li data-list="ordered">5678</li></ol>
+      <ol><li data-list="ordered" style="display: block;">5678</li></ol>
       <p>0123</p>
     `);
   });
@@ -39,15 +39,15 @@ describe('List', function() {
     expect(editor.getDelta()).toEqual(
       new Delta()
         .insert('0123')
-        .insert('\n', { list: 'checked' })
+        .insert('\n', { list: { list: 'checked' } })
         .insert('5678')
-        .insert('\n', { list: 'unchecked' })
+        .insert('\n', { list: { list: 'unchecked' } })
         .insert('0123\n'),
     );
     expect(this.container).toEqualHTML(`
       <ol>
-        <li data-list="checked">0123</li>
-        <li data-list="unchecked">5678</li>
+        <li data-list="checked" style="display: block;">0123</li>
+        <li data-list="unchecked" style="display: block;">5678</li>
       </ol>
       <p>0123</p>
     `);
@@ -84,12 +84,12 @@ describe('List', function() {
     expect(editor.getDelta()).toEqual(
       new Delta()
         .insert('0123\n5678')
-        .insert('\n', { list: 'bullet' })
+        .insert('\n', { list: { list: 'bullet' } })
         .insert('0123\n'),
     );
     expect(this.container).toEqualHTML(`
       <p>0123</p>
-      <ol><li data-list="bullet">5678</li></ol>
+      <ol><li data-list="bullet" style="display: block;">5678</li></ol>
       <p>0123</p>
     `);
   });
@@ -105,10 +105,10 @@ describe('List', function() {
     );
     editor.formatText(4, 1, { list: 'bullet' });
     expect(editor.getDelta()).toEqual(
-      new Delta().insert('0123').insert('\n', { list: 'bullet' }),
+      new Delta().insert('0123').insert('\n', { list: { list: 'bullet' } }),
     );
     expect(this.container).toEqualHTML(`
-      <ol><li data-list="bullet">0123</li></ol>
+      <ol><li data-list="bullet" style="display: block;">0123</li></ol>
     `);
   });
 
@@ -121,10 +121,10 @@ describe('List', function() {
     expect(editor.getDelta()).toEqual(
       new Delta()
         .insert('0123')
-        .insert('\n', { align: 'center', list: 'bullet' }),
+        .insert('\n', { align: 'center', list: { list: 'bullet' } }),
     );
     expect(this.container).toEqualHTML(
-      '<ol><li data-list="bullet" class="ql-align-center">0123</li></ol>',
+      '<ol><li data-list="bullet" class="ql-align-center" style="display: block;">0123</li></ol>',
     );
   });
 
@@ -141,17 +141,17 @@ describe('List', function() {
     expect(editor.getDelta()).toEqual(
       new Delta()
         .insert('0123')
-        .insert('\n', { list: 'ordered' })
+        .insert('\n', { list: { list: 'ordered' } })
         .insert('5678')
-        .insert('\n', { list: 'ordered' })
+        .insert('\n', { list: { list: 'ordered' } })
         .insert('0123')
-        .insert('\n', { list: 'ordered' }),
+        .insert('\n', { list: { list: 'ordered' } }),
     );
     expect(this.container).toEqualHTML(`
       <ol>
-        <li data-list="ordered">0123</li>
-        <li data-list="ordered">5678</li>
-        <li data-list="ordered">0123</li>
+        <li data-list="ordered" style="display: block;">0123</li>
+        <li data-list="ordered" style="display: block;">5678</li>
+        <li data-list="ordered" style="display: block;">0123</li>
       </ol>`);
   });
 
@@ -167,14 +167,14 @@ describe('List', function() {
     expect(editor.getDelta()).toEqual(
       new Delta()
         .insert('0123')
-        .insert('\n', { list: 'ordered' })
+        .insert('\n', { list: { list: 'ordered' } })
         .insert('0123')
-        .insert('\n', { list: 'ordered' }),
+        .insert('\n', { list: { list: 'ordered' } }),
     );
     expect(this.container).toEqualHTML(`
       <ol>
-        <li data-list="ordered">0123</li>
-        <li data-list="ordered">0123</li>
+        <li data-list="ordered" style="display: block;">0123</li>
+        <li data-list="ordered" style="display: block;">0123</li>
       </ol>`);
   });
 
@@ -191,17 +191,17 @@ describe('List', function() {
     expect(editor.getDelta()).toEqual(
       new Delta()
         .insert('0123')
-        .insert('\n', { list: 'checked' })
+        .insert('\n', { list: { list: 'checked' } })
         .insert('5678')
-        .insert('\n', { list: 'checked' })
+        .insert('\n', { list: { list: 'checked' } })
         .insert('0123')
-        .insert('\n', { list: 'checked' }),
+        .insert('\n', { list: { list: 'checked' } }),
     );
     expect(this.container).toEqualHTML(`
       <ol>
-        <li data-list="checked">0123</li>
-        <li data-list="checked">5678</li>
-        <li data-list="checked">0123</li>
+        <li data-list="checked" style="display: block;">0123</li>
+        <li data-list="checked" style="display: block;">5678</li>
+        <li data-list="checked" style="display: block;">0123</li>
       </ol>`);
   });
 
@@ -212,11 +212,11 @@ describe('List', function() {
     );
     editor.insertText(0, 'Test');
     expect(this.container).toEqualHTML(
-      '<ol><li data-list="ordered">Test</li></ol>',
+      '<ol><li data-list="ordered" style="display: block;">Test</li></ol>',
     );
     editor.deleteText(0, 4);
     expect(this.container).toEqualHTML(
-      '<ol><li data-list="ordered"><br></li></ol>',
+      '<ol><li data-list="ordered" style="display: block;"><br></li></ol>',
     );
   });
 
@@ -233,7 +233,7 @@ describe('List', function() {
     editor.deleteText(2, 5);
     expect(this.container).toEqualHTML(`
       <ol>
-        <li data-list="ordered">0178</li>
+        <li data-list="ordered" style="display: block;">0178</li>
         <li data-list="ordered">0123</li>
       </ol>`);
   });
@@ -256,7 +256,7 @@ describe('List', function() {
     );
     editor.deleteText(2, 5);
     expect(this.container).toEqualHTML(
-      '<ol><li data-list="ordered">0178</li></ol>',
+      '<ol><li data-list="ordered" style="display: block;">0178</li></ol>',
     );
   });
 
@@ -274,9 +274,9 @@ describe('List', function() {
     editor.formatLine(1, 10, { list: 'bullet' });
     expect(this.container).toEqualHTML(`
       <ol>
-        <li data-list="bullet">One</li>
-        <li data-list="bullet" class='ql-indent-1'>Alpha</li>
-        <li data-list="bullet">Two</li>
+        <li data-list="bullet" style="display: block;">One</li>
+        <li data-list="bullet" class='ql-indent-1' style="display: block;">Alpha</li>
+        <li data-list="bullet" style="display: block;">Two</li>
       </ol>
     `);
   });
@@ -288,7 +288,7 @@ describe('List', function() {
     );
     editor.formatLine(4, 1, { list: 'bullet' });
     expect(this.container).toEqualHTML(
-      '<ol><li data-list="bullet" class="ql-align-center">Test</li></ol>',
+      '<ol><li data-list="bullet" class="ql-align-center" style="display: block;">Test</li></ol>',
     );
   });
 
@@ -303,9 +303,9 @@ describe('List', function() {
       'https://www.youtube.com/embed/QHH3iSeDBLo?showinfo=0',
     );
     expect(this.container).toEqualHTML(`
-      <ol><li data-list="ordered">Te</li></ol>
+      <ol><li data-list="ordered" style="display: block;">Te</li></ol>
       <iframe class="ql-video" frameborder="0" allowfullscreen="true" src="https://www.youtube.com/embed/QHH3iSeDBLo?showinfo=0"></iframe>
-      <ol><li data-list="ordered">st</li></ol>
+      <ol><li data-list="ordered" style="display: block;">st</li></ol>
     `);
   });
 
@@ -321,7 +321,7 @@ describe('List', function() {
     );
     expect(this.container).toEqualHTML(`
       <iframe class="ql-video" frameborder="0" allowfullscreen="true" src="https://www.youtube.com/embed/QHH3iSeDBLo?showinfo=0"></iframe>
-      <ol><li data-list="ordered">Test</li></ol>
+      <ol><li data-list="ordered" style="display: block;">Test</li></ol>
     `);
   });
 
@@ -336,9 +336,9 @@ describe('List', function() {
       'https://www.youtube.com/embed/QHH3iSeDBLo?showinfo=0',
     );
     expect(this.container).toEqualHTML(`
-      <ol><li data-list="ordered">Test</li></ol>
+      <ol><li data-list="ordered" style="display: block;">Test</li></ol>
       <iframe class="ql-video" frameborder="0" allowfullscreen="true" src="https://www.youtube.com/embed/QHH3iSeDBLo?showinfo=0"></iframe>
-      <ol><li data-list="ordered"><br></li></ol>
+      <ol><li data-list="ordered" style="display: block;"><br></li></ol>
     `);
   });
 });
