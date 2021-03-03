@@ -243,7 +243,13 @@ describe('Clipboard', function() {
     });
 
     it('html table', function() {
-      const delta = this.clipboard.convert({
+      const quill = this.initialize(Quill, '', this.container, {
+        modules: {
+          table: true,
+        },
+      });
+
+      const delta = quill.clipboard.convert({
         html:
           '<table>' +
           '<thead><tr><td>A1</td><td>A2</td><td>A3</td></tr></thead>' +
@@ -252,8 +258,35 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('A1\nA2\nA3\n', { table: 1 })
-          .insert('B1\n\nB3\n', { table: 2 }),
+          .insert('\n\n\n', { 'table-col': true })
+          .insert('A1')
+          .insert('\n', {
+            row: 1,
+            'table-cell-line': { cell: '1-1', colspan: 1, row: 1, rowspan: 1 },
+          })
+          .insert('A2')
+          .insert('\n', {
+            row: 1,
+            'table-cell-line': { cell: '1-2', colspan: 1, row: 1, rowspan: 1 },
+          })
+          .insert('A3')
+          .insert('\n', {
+            row: 1,
+            'table-cell-line': { cell: '1-3', colspan: 1, row: 1, rowspan: 1 },
+          })
+          .insert('B1')
+          .insert('\n', {
+            row: 2,
+            'table-cell-line': { cell: '2-1', colspan: 1, row: 2, rowspan: 1 },
+          })
+          .insert('\n', {
+            'table-cell-line': { cell: '2-2', colspan: 1, row: 2, rowspan: 1 },
+          })
+          .insert('B3')
+          .insert('\n', {
+            row: 2,
+            'table-cell-line': { cell: '2-3', colspan: 1, row: 2, rowspan: 1 },
+          }),
       );
     });
 
