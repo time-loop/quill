@@ -65,6 +65,8 @@
 <script src="{{site.highlightjs}}/highlight.min.js"></script>
 <script src="{{site.cdn}}{{site.version}}/{{site.quill}}"></script>
 <script>
+  Quill.enableBlockIdMode(false);
+
   var quill = new Quill('#editor-container', {
     modules: {
       syntax: true,
