@@ -1,3 +1,5 @@
+import { Attributor } from 'parchment';
+
 import Quill from './core';
 
 import { AlignClass, AlignStyle } from './formats/align';
@@ -55,6 +57,7 @@ import SnowTheme from './themes/snow';
 
 Quill.register(
   {
+    'attributor': Attributor,
     'attributors/attribute/direction': DirectionAttribute,
     'attributors/attribute/void-detect': voidDetectAttribute,
     'attributors/attribute/block-id': BlockIdentityAttribute,
