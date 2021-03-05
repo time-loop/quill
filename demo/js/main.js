@@ -410,6 +410,8 @@ window.onload = () => {
         tableTools: {
           zIndex: 100,
         },
+        customRowId: rowIndex => `${rowIndex + 1}`,
+        customCellId: (rowIndex, colIndex) => `${rowIndex + 1}-${colIndex + 1}`,
       },
       storage: true,
       syntax: true,

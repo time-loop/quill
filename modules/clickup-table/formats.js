@@ -458,7 +458,7 @@ class TableContainer extends Container {
 
   balanceCells() {
     if (this.descendants(TableCell).length <= 0) {
-      this.remove();
+      this.parent.remove();
       return false;
     }
     // workaround: remove the extra colgroup when two tables were accidentally merged into one.
@@ -609,8 +609,10 @@ class TableContainer extends Container {
 
   remove() {
     const quill = Quill.find(this.scroll.domNode.parentNode);
-    const tableModule = quill.getModule('table');
-    tableModule.hideTableTools();
+    if (quill && quill.getModule('table')) {
+      const tableModule = quill.getModule('table');
+      tableModule.hideTableTools();
+    }
     super.remove();
   }
 

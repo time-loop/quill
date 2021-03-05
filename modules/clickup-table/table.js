@@ -48,6 +48,26 @@ class Table extends Module {
       ListItem.DEFAULT_TOGGLE_PLACEHOLDER = options.togglelistPlaceholder;
     }
 
+    if (options.customRowId && typeof options.customRowId === 'function') {
+      this.genRowId = rowIndex => {
+        return options.customRowId(rowIndex);
+      };
+    } else {
+      this.genRowId = () => {
+        return rowId();
+      };
+    }
+
+    if (options.customCellId && typeof options.customCellId === 'function') {
+      this.genCellId = (rowIndex, colIndex) => {
+        return options.customCellId(rowIndex, colIndex);
+      };
+    } else {
+      this.genCellId = () => {
+        return cellId();
+      };
+    }
+
     this.quill.on('text-change', () => {
       if (this.rowTool && this.table) {
         const tableRect = this.rowTool.table.getBoundingClientRect();
@@ -349,11 +369,14 @@ class Table extends Module {
       return memo;
     }, delta);
     // insert table cell line with empty line
-    delta = new Array(rows).fill(0).reduce(memo => {
-      const tableRowId = rowId();
-      return new Array(columns).fill('\n').reduce((result, text) => {
+    delta = new Array(rows).fill(0).reduce((memo, item, rowIndex) => {
+      const tableRowId = this.genRowId(rowIndex);
+      return new Array(columns).fill('\n').reduce((result, text, colIndex) => {
         result.insert(text, {
-          'table-cell-line': { row: tableRowId, cell: cellId() },
+          'table-cell-line': {
+            row: tableRowId,
+            cell: this.genCellId(rowIndex, colIndex),
+          },
         });
         return result;
       }, memo);
