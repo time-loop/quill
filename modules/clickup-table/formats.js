@@ -88,6 +88,10 @@ class TableCellLine extends Block {
       if (value) {
         if (typeof value === 'object') {
           this.replaceWith(TableCellLine.blotName, value);
+          const parentCellId = this.parent.formats().cell;
+          if (parentCellId !== value.cell) {
+            this.parent.unwrap();
+          }
         } else {
           super.format(name, {
             row,
@@ -253,7 +257,6 @@ class TableCell extends Container {
 
   optimize(context) {
     const curRowId = this.domNode.getAttribute('data-row');
-    const curCellId = this.domNode.getAttribute('data-cell');
 
     if (
       this.statics.requiredContainer &&
@@ -262,34 +265,37 @@ class TableCell extends Container {
       this.wrap(this.statics.requiredContainer.blotName, {
         row: curRowId,
       });
-    } else if (
-      this.statics.requiredContainer &&
-      this.parent instanceof this.statics.requiredContainer &&
-      this.children
-        .map(child => child)
-        .every(
-          item =>
-            item.statics.blotName === 'list-container' ||
-            item.statics.blotName === 'table-cell-line',
-        )
-    ) {
-      const hasChildInOtherCell = this.children
-        .map(child => {
-          const childFormats = child.formats();
-          if (child.statics.blotName === 'list-container') {
-            return curCellId === childFormats.cell;
-          }
-          if (child.statics.blotName === 'table-cell-line') {
-            return curCellId === childFormats['table-cell-line'].cell;
-          }
-          return false;
-        })
-        .some(item => !item);
-      if (hasChildInOtherCell) {
-        this.unwrap();
-      }
     }
     super.optimize(context);
+    this.children.forEach(child => {
+      if (child.next == null) return;
+      const childFormats = child.formats();
+      const nextFormats = child.next.formats();
+      let childCellId;
+      if (child.statics.blotName === 'table-cell-line') {
+        childCellId = childFormats['table-cell-line'].cell;
+      } else if (child.statics.blotName === 'list-container') {
+        childCellId = childFormats.cell;
+      }
+
+      let nextCellId;
+      if (child.statics.blotName === 'table-cell-line') {
+        nextCellId = nextFormats['table-cell-line'].cell;
+      } else if (child.statics.blotName === 'list-container') {
+        nextCellId = nextFormats.cell;
+      }
+
+      if (childCellId !== nextCellId) {
+        const next = this.splitAfter(child);
+        if (next) {
+          next.optimize();
+        }
+        // We might be able to merge with prev now
+        if (this.prev) {
+          this.prev.optimize();
+        }
+      }
+    });
   }
 
   row() {
@@ -353,33 +359,30 @@ class TableRow extends Container {
   }
 
   optimize(context) {
-    const curRowId = this.domNode.getAttribute('data-row');
     // optimize function of ShadowBlot
     if (
       this.statics.requiredContainer &&
       !(this.parent instanceof this.statics.requiredContainer)
     ) {
       this.wrap(this.statics.requiredContainer.blotName);
-    } else if (
-      this.statics.requiredContainer &&
-      this.parent instanceof this.statics.requiredContainer &&
-      this.children.map(child => child).every(item => item instanceof TableCell)
-    ) {
-      const hasChildInOtherRow = this.children
-        .map(child => {
-          const childFormats = child.formats();
-          if (child instanceof TableCell) {
-            return curRowId === childFormats.row;
-          }
-          return true;
-        })
-        .some(item => !item);
-      if (hasChildInOtherRow) {
-        this.unwrap();
-      }
     }
 
     super.optimize(context);
+    this.children.forEach(child => {
+      if (child.next == null) return;
+      const childFormats = child.formats();
+      const nextFormats = child.next.formats();
+      if (childFormats.row !== nextFormats.row) {
+        const next = this.splitAfter(child);
+        if (next) {
+          next.optimize();
+        }
+        // We might be able to merge with prev now
+        if (this.prev) {
+          this.prev.optimize();
+        }
+      }
+    });
   }
 
   rowOffset() {
