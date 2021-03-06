@@ -164,7 +164,7 @@
     "test": "npm run test:unit",
     "test:all": "npm run test:unit && npm run test:functional",
     "test:functional": "./_develop/scripts/puppeteer.sh",
-    "test:unit": "npm run build && npx karma start _develop/karma.config.js",
+    "test:unit": "npm run build --mode=development && npx karma start _develop/karma.config.js",
     "test:coverage": "npx webpack --env.coverage --config _develop/webpack.config.js && npx karma start _develop/karma.config.js --reporters coverage",
     "travis": "npm run lint && karma start _develop/karma.config.js --reporters dots,saucelabs"
   },

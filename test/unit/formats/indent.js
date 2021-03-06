@@ -9,10 +9,12 @@ describe('Indent', function() {
     );
     editor.formatText(4, 1, { indent: '+1' });
     expect(editor.getDelta()).toEqual(
-      new Delta().insert('0123').insert('\n', { list: 'bullet', indent: 1 }),
+      new Delta()
+        .insert('0123')
+        .insert('\n', { list: { list: 'bullet' }, indent: 1 }),
     );
     expect(editor.scroll.domNode).toEqualHTML(
-      '<ol><li data-list="bullet" class="ql-indent-1">0123</li></ol>',
+      '<ol><li data-list="bullet" class="ql-indent-1" style="display: block;">0123</li></ol>',
     );
   });
 
@@ -23,10 +25,10 @@ describe('Indent', function() {
     );
     editor.formatText(4, 1, { indent: '-1' });
     expect(editor.getDelta()).toEqual(
-      new Delta().insert('0123').insert('\n', { list: 'bullet' }),
+      new Delta().insert('0123').insert('\n', { list: { list: 'bullet' } }),
     );
     expect(editor.scroll.domNode).toEqualHTML(
-      '<ol><li data-list="bullet">0123</li></ol>',
+      '<ol><li data-list="bullet" style="display: block;">0123</li></ol>',
     );
   });
 });

@@ -8,17 +8,13 @@ import {
   DirectionClass,
   DirectionStyle,
 } from './formats/direction';
-import {
-  voidDetectAttribute
-} from './formats/void-detect.js';
-import {
-  BlockIdentityAttribute
-} from './formats/block-id';
+import voidDetectAttribute from './formats/void-detect.js';
+import BlockIdentityAttribute from './formats/block-id';
 import Indent from './formats/indent';
 
 import Blockquote from './formats/blockquote';
 import Header from './formats/header';
-// clickup: remove 
+// clickup: remove
 // import List from './modules/clickup-list/list';
 
 import { BackgroundClass, BackgroundStyle } from './formats/background';
@@ -43,7 +39,6 @@ import Syntax from './modules/syntax';
 // clickup: replace the import path of table module to clickup-table
 import Table from './modules/clickup-table/table';
 import Toolbar from './modules/toolbar';
-import DragDropBlocks from './modules/drag-drop-blocks/drag-drop-blocks';
 import Storage from './modules/clickup-storage/storage';
 
 import Icons from './ui/icons';
@@ -113,7 +108,6 @@ Quill.register(
     'modules/syntax': Syntax,
     'modules/table': Table,
     'modules/toolbar': Toolbar,
-    'modules/dragDropBlocks': DragDropBlocks,
     'modules/storage': Storage,
 
     'themes/bubble': BubbleTheme,

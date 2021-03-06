@@ -252,13 +252,12 @@ function convertListHTML(items, lastIndent, types) {
           indent,
           types,
         )}`;
-      } else {
-        return `<${tag}><li${attribute}>${convertHTML(
-          child,
-          offset,
-          length,
-        )}${convertListHTML(rest, indent, types)}`;
       }
+      return `<${tag}><li${attribute}>${convertHTML(
+        child,
+        offset,
+        length,
+      )}${convertListHTML(rest, indent, types)}`;
     }
     return `<${tag}><li>${convertListHTML(items, lastIndent + 1, types)}`;
   }
@@ -292,7 +291,7 @@ function convertHTML(blot, index, length, isRoot = false) {
           offset,
           length: childLength,
           indent: formats.indent || 0,
-          type: formats.list,
+          type: formats.list.list,
         });
       });
       return convertListHTML(items, -1, []);
@@ -341,14 +340,12 @@ function getListType(type) {
       return [tag, ' data-list="checked"'];
     case 'unchecked':
       return [tag, ' data-list="unchecked"'];
-    case 'ordered':
-      return [tag, ' data-list="ordered"'];
-    case 'bullet':
-      return [tag, ' data-list="bullet"'];
     case 'toggled':
       return [tag, ' data-list="toggled"'];
     case 'none':
       return [tag, ' data-list="none"'];
+    case 'ordered':
+    case 'bullet':
     default:
       return [tag, ''];
   }

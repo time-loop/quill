@@ -8,6 +8,7 @@ import Selection, { Range } from './selection';
 import instances from './instances';
 import logger from './logger';
 import Theme from './theme';
+import { BlockIdentityAttributeOptions } from '../formats/block-id';
 
 const debug = logger('quill');
 
@@ -59,6 +60,10 @@ class Quill {
         target.register(globalRegistry);
       }
     }
+  }
+
+  static enableBlockIdMode(enable = true) {
+    BlockIdentityAttributeOptions.enabled = enable;
   }
 
   constructor(container, options = {}) {
@@ -439,7 +444,6 @@ class Quill {
   removeInstance() {
     instances.delete(this.container);
   }
-  
 }
 Quill.DEFAULTS = {
   bounds: null,

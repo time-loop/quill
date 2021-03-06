@@ -198,8 +198,8 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('One\n', { list: 'ordered' })
-          .insert('Alpha\n', { list: 'ordered', indent: 1 }),
+          .insert('One\n', { list: { list: 'ordered' } })
+          .insert('Alpha\n', { list: { list: 'ordered' }, indent: 1 }),
       );
     });
 
@@ -210,9 +210,9 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('One\n', { list: 'ordered' })
-          .insert('Alpha\nBeta\n', { list: 'ordered', indent: 1 })
-          .insert('I\n', { list: 'ordered', indent: 2 }),
+          .insert('One\n', { list: { list: 'ordered' } })
+          .insert('Alpha\nBeta\n', { list: { list: 'ordered' }, indent: 1 })
+          .insert('I\n', { list: { list: 'ordered' }, indent: 2 }),
       );
     });
 
@@ -223,9 +223,9 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('One\n', { list: 'bullet' })
-          .insert('Alpha\nBeta\n', { list: 'bullet', indent: 1 })
-          .insert('I\n', { list: 'bullet', indent: 2 }),
+          .insert('One\n', { list: { list: 'bullet' } })
+          .insert('Alpha\nBeta\n', { list: { list: 'bullet' }, indent: 1 })
+          .insert('I\n', { list: { list: 'bullet' }, indent: 2 }),
       );
     });
 
@@ -236,14 +236,20 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('iiii\n', { list: 'ordered', indent: 2 })
-          .insert('bbbb\n', { list: 'ordered', indent: 1 })
-          .insert('2222\n', { list: 'ordered' }),
+          .insert('iiii\n', { list: { list: 'ordered' }, indent: 2 })
+          .insert('bbbb\n', { list: { list: 'ordered' }, indent: 1 })
+          .insert('2222\n', { list: { list: 'ordered' } }),
       );
     });
 
     it('html table', function() {
-      const delta = this.clipboard.convert({
+      const quill = this.initialize(Quill, '', this.container, {
+        modules: {
+          table: true,
+        },
+      });
+
+      const delta = quill.clipboard.convert({
         html:
           '<table>' +
           '<thead><tr><td>A1</td><td>A2</td><td>A3</td></tr></thead>' +
@@ -252,8 +258,35 @@ describe('Clipboard', function() {
       });
       expect(delta).toEqual(
         new Delta()
-          .insert('A1\nA2\nA3\n', { table: 1 })
-          .insert('B1\n\nB3\n', { table: 2 }),
+          .insert('\n\n\n', { 'table-col': true })
+          .insert('A1')
+          .insert('\n', {
+            row: 1,
+            'table-cell-line': { cell: '1-1', colspan: 1, row: 1, rowspan: 1 },
+          })
+          .insert('A2')
+          .insert('\n', {
+            row: 1,
+            'table-cell-line': { cell: '1-2', colspan: 1, row: 1, rowspan: 1 },
+          })
+          .insert('A3')
+          .insert('\n', {
+            row: 1,
+            'table-cell-line': { cell: '1-3', colspan: 1, row: 1, rowspan: 1 },
+          })
+          .insert('B1')
+          .insert('\n', {
+            row: 2,
+            'table-cell-line': { cell: '2-1', colspan: 1, row: 2, rowspan: 1 },
+          })
+          .insert('\n', {
+            'table-cell-line': { cell: '2-2', colspan: 1, row: 2, rowspan: 1 },
+          })
+          .insert('B3')
+          .insert('\n', {
+            row: 2,
+            'table-cell-line': { cell: '2-3', colspan: 1, row: 2, rowspan: 1 },
+          }),
       );
     });
 

@@ -20,13 +20,11 @@ class Link extends Inline {
   format(name, value) {
     if (name !== this.statics.blotName) {
       super.format(name, value);
+    } else if (value) {
+      this.domNode.setAttribute('href', this.constructor.sanitize(value));
     } else {
-      if (value) {
-        this.domNode.setAttribute('href', this.constructor.sanitize(value));
-      } else {
-        this.format('void-detect', 'true')
-        super.format(name, value);
-      }
+      this.format('void-detect', 'true');
+      super.format(name, value);
     }
 
     if (name !== this.statics.blotName || !value) {

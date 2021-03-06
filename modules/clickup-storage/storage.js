@@ -1,80 +1,77 @@
 import Quill from '../../core/quill';
 import Module from '../../core/module';
-import { filter } from 'lodash';
 
-import { ListItem } from '../clickup-table/formats'
+import { ListItem } from '../clickup-table/formats';
 
-export const THE_KEY_FOR_EXPANDED_TOGGLE_LIST = 'Quill_Expanded_Toggle_Lists'
-const STORED_KEYS = [
-  THE_KEY_FOR_EXPANDED_TOGGLE_LIST
-]
+export const THE_KEY_FOR_EXPANDED_TOGGLE_LIST = 'Quill_Expanded_Toggle_Lists';
+const STORED_KEYS = [THE_KEY_FOR_EXPANDED_TOGGLE_LIST];
 
 const fakeStorage = {
   [THE_KEY_FOR_EXPANDED_TOGGLE_LIST]: '[]',
   getItem(key) {
-    return fakeStorage[key]
+    return fakeStorage[key];
   },
   setItem(key, value) {
-    fakeStorage[key] = value
+    fakeStorage[key] = value;
   },
   removeItem(key) {
-    fakeStorage[key] = ''
+    fakeStorage[key] = '';
   },
   clear() {
     STORED_KEYS.forEach(key => {
-      fakeStorage[key] = ''
-    })
-  }
-}
+      fakeStorage[key] = '';
+    });
+  },
+};
 
 const isSupportLocalStorage = storage => {
-  if(!!storage){
-      try {
-        storage.setItem('cu_storage_test', 'test');
-        storage.removeItem('cu_storage_test');
-          return true;
-      } catch(e){
-        return false;
-      }
-  }else{
+  if (storage) {
+    try {
+      storage.setItem('cu_storage_test', 'test');
+      storage.removeItem('cu_storage_test');
+      return true;
+    } catch (e) {
       return false;
+    }
+  } else {
+    return false;
   }
-}
+};
 
 export default class QuillStorage extends Module {
   constructor(...args) {
-    super(...args)
-    this.enable = isSupportLocalStorage(window.localStorage)
+    super(...args);
+    this.enable = isSupportLocalStorage(window.localStorage);
     if (this.enable) {
-      this.storageRef = window.localStorage
+      this.storageRef = window.localStorage;
     } else {
-      this.storageRef = fakeStorage
+      this.storageRef = fakeStorage;
     }
 
-    this.listenExpandToggleList()
+    this.listenExpandToggleList();
   }
 
   getItem(key) {
-    return JSON.parse(this.storageRef.getItem(key))
+    return JSON.parse(this.storageRef.getItem(key));
   }
 
   setItem(key, val) {
-    this.storageRef.setItem(key, JSON.stringify(val))
+    this.storageRef.setItem(key, JSON.stringify(val));
   }
 
   addExpandedToggleList(listItemId) {
-    const lists = this.getItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST) || []
+    const lists = this.getItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST) || [];
     lists.push({
       id: listItemId,
-      time: new Date().getTime()
-    })
-    this.setItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST, lists)
+      time: new Date().getTime(),
+    });
+    this.setItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST, lists);
   }
 
   removeCollapsedToggleList(listItemId) {
-    let lists = this.getItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST) || []
-    lists = filter(lists, item => item.id !== listItemId)
-    this.setItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST, lists)
+    let lists = this.getItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST) || [];
+    lists = lists.filter(item => item.id !== listItemId);
+    this.setItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST, lists);
   }
 
   listenExpandToggleList() {
@@ -92,12 +89,14 @@ export default class QuillStorage extends Module {
     });
   }
 
-  expandToggleListInStorage () {
-    const storageModule = this.quill.getModule('storage')
+  expandToggleListInStorage() {
+    const storageModule = this.quill.getModule('storage');
     this.quill.scroll.descendants(ListItem).forEach(listItem => {
       if (storageModule) {
-        const cachedToggleListItems = storageModule.getItem(THE_KEY_FOR_EXPANDED_TOGGLE_LIST)
-        const format = ListItem.formats(listItem.domNode)
+        const cachedToggleListItems = storageModule.getItem(
+          THE_KEY_FOR_EXPANDED_TOGGLE_LIST,
+        );
+        const format = ListItem.formats(listItem.domNode);
         if (
           listItem.isToggleListItem() &&
           cachedToggleListItems &&
@@ -106,7 +105,7 @@ export default class QuillStorage extends Module {
           cachedToggleListItems.some(item => item.id === format['toggle-id']) &&
           !listItem.isThisItemExpanded()
         ) {
-          listItem.expandItem()
+          listItem.expandItem();
         }
       }
     });

@@ -1,4 +1,3 @@
-import Quill from '../core/quill';
 import extend from 'extend';
 import { v4 as uuid } from 'uuid';
 import Delta from 'quill-delta';
@@ -12,7 +11,9 @@ import {
 import Break from './break';
 import Inline from './inline';
 import TextBlot from './text';
-import { BlockIdentityAttribute } from '../formats/block-id';
+import BlockIdentityAttribute, {
+  BlockIdentityAttributeOptions,
+} from '../formats/block-id';
 
 const NEWLINE_LENGTH = 1;
 
@@ -101,7 +102,10 @@ class Block extends BlockBlot {
     super.optimize(context);
     this.cache = {};
     const curFormats = this.formats();
-    if (!curFormats || !curFormats[BlockIdentityAttribute.attrName]) {
+    if (
+      BlockIdentityAttributeOptions.enabled &&
+      (!curFormats || !curFormats[BlockIdentityAttribute.attrName])
+    ) {
       this.format(BlockIdentityAttribute.attrName, `block-${uuid()}`);
     }
   }
@@ -131,7 +135,7 @@ class Block extends BlockBlot {
   }
 }
 Block.blotName = 'block';
-Block.tagName = 'DIV';
+Block.tagName = 'P';
 Block.defaultChild = Break;
 Block.allowedChildren = [Break, Inline, EmbedBlot, TextBlot];
 

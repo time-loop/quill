@@ -4,6 +4,11 @@ const config = {
   scope: Scope.BLOCK,
 };
 
-const BlockIdentityAttribute = new Attributor('block-id', 'data-block-id', config);
+const BlockIdentityAttribute = new Attributor(
+  'block-id',
+  'data-block-id',
+  config,
+);
 
-export { BlockIdentityAttribute };
+export default BlockIdentityAttribute;
+export const BlockIdentityAttributeOptions = { enabled: true };

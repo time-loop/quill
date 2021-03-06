@@ -67,11 +67,11 @@ describe('Link', function() {
     editor.formatText(1, 2, { link: false });
     const delta = new Delta()
       .insert('0')
-      .insert('12', { size: 'large' })
+      .insert('12', { size: 'large', 'void-detect': 'true' })
       .insert('3\n');
     expect(editor.getDelta()).toEqual(delta);
     expect(editor.scroll.domNode).toEqualHTML(
-      '<p>0<span class="ql-size-large">12</span>3</p>',
+      '<p>0<span class="ql-size-large" data-void-detect="true">12</span>3</p>',
     );
   });
 });

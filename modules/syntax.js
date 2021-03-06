@@ -15,10 +15,10 @@ import {
   CELL_ATTRIBUTES,
   ListBlockWrapper,
   SUPPORTED_LIST_TYPES,
-} from '../modules/clickup-table/formats';
+} from './clickup-table/formats';
 
-const IN_LIST = 'in-list'
-const WRAPPER_INDENT = 'wrapper-indent'
+const IN_LIST = 'in-list';
+const WRAPPER_INDENT = 'wrapper-indent';
 
 const TokenAttributor = new ClassAttributor('code-token', 'hljs', {
   scope: Scope.INLINE,
@@ -63,7 +63,7 @@ CodeToken.className = 'ql-token';
 class SyntaxCodeBlock extends CodeBlock {
   static create(value) {
     if (typeof value === 'string') {
-      value = { [SyntaxCodeBlock.blotName]: value }
+      value = { [SyntaxCodeBlock.blotName]: value };
     }
 
     const domNode = super.create(value);
@@ -72,47 +72,44 @@ class SyntaxCodeBlock extends CodeBlock {
       domNode.setAttribute('data-language', value[SyntaxCodeBlock.blotName]);
     }
 
-    CELL_IDENTITY_KEYS
-      .concat(CELL_ATTRIBUTES)
-      .forEach(key => {
-        if (value[key]) domNode.setAttribute(`data-${key}`, value[key])
-      })
+    CELL_IDENTITY_KEYS.concat(CELL_ATTRIBUTES).forEach(key => {
+      if (value[key]) {
+        domNode.setAttribute(`data-${key}`, value[key]);
+      }
+    });
 
     if (value[IN_LIST]) {
       domNode.setAttribute(
         `data-${IN_LIST}`,
         SUPPORTED_LIST_TYPES.indexOf(value[IN_LIST]) >= 0
           ? value[IN_LIST]
-          : 'none'
+          : 'none',
       );
     }
 
     if (value[WRAPPER_INDENT]) {
-      domNode.setAttribute(`data-${WRAPPER_INDENT}`, value[WRAPPER_INDENT])
+      domNode.setAttribute(`data-${WRAPPER_INDENT}`, value[WRAPPER_INDENT]);
     }
 
     return domNode;
   }
 
   static formats(domNode) {
-    const formats = {}
-
+    const formats = {};
     if (domNode.hasAttribute('data-language')) {
-      formats[SyntaxCodeBlock.blotName] = domNode.getAttribute('data-language') || 'plain';
+      formats[SyntaxCodeBlock.blotName] =
+        domNode.getAttribute('data-language') || 'plain';
     }
 
     return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat([IN_LIST, WRAPPER_INDENT])
-      .reduce((formats, attribute) => {
+      .reduce((result, attribute) => {
         if (domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] = domNode.getAttribute(`data-${attribute}`) || undefined
+          result[attribute] =
+            domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats
-      }, formats)
-  }
-
-  static register() {
-    ListBlockWrapper.addAllowChildren(SyntaxCodeBlockContainer);
+        return result;
+      }, formats);
   }
 
   format(name, value) {
@@ -124,21 +121,23 @@ class SyntaxCodeBlock extends CodeBlock {
   }
 
   optimize(context) {
-    const formats = SyntaxCodeBlock.formats(this.domNode)
-    const { row, cell, rowspan, colspan } = formats
-    if (this.statics.requiredContainer &&
-      !(this.parent instanceof this.statics.requiredContainer)) {
+    const formats = SyntaxCodeBlock.formats(this.domNode);
+    const { row, cell, rowspan, colspan } = formats;
+    if (
+      this.statics.requiredContainer &&
+      !(this.parent instanceof this.statics.requiredContainer)
+    ) {
       this.wrap(this.statics.requiredContainer.blotName, {
         row,
         cell,
         colspan,
         rowspan,
         [IN_LIST]: formats[IN_LIST],
-        [WRAPPER_INDENT]: formats[WRAPPER_INDENT]
-      })
+        [WRAPPER_INDENT]: formats[WRAPPER_INDENT],
+      });
     }
 
-    super.optimize(context)
+    super.optimize(context);
   }
 
   replaceWith(name, value) {
@@ -149,25 +148,23 @@ class SyntaxCodeBlock extends CodeBlock {
 
 class SyntaxCodeBlockContainer extends CodeBlockContainer {
   static create(value) {
-    const node = super.create(value)
+    const node = super.create(value);
 
-    CELL_ATTRIBUTES
-      .concat(CELL_IDENTITY_KEYS)
-      .forEach(attrName => {
-        if (value[attrName]) {
-          node.setAttribute(`data-${attrName}`, value[attrName])
-        }
-      })
+    CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS).forEach(attrName => {
+      if (value[attrName]) {
+        node.setAttribute(`data-${attrName}`, value[attrName]);
+      }
+    });
 
     if (value[IN_LIST]) {
-      node.setAttribute(`data-${IN_LIST}`, 'true')
+      node.setAttribute(`data-${IN_LIST}`, 'true');
     }
 
     if (value[WRAPPER_INDENT]) {
-      node.setAttribute(`data-${WRAPPER_INDENT}`, value[WRAPPER_INDENT])
+      node.setAttribute(`data-${WRAPPER_INDENT}`, value[WRAPPER_INDENT]);
     }
 
-    return node
+    return node;
   }
 
   attach() {
@@ -198,7 +195,9 @@ class SyntaxCodeBlockContainer extends CodeBlockContainer {
       node => node !== this.uiNode,
     );
     const text = `${nodes.map(node => node.textContent).join('\n')}\n`;
-    const language = SyntaxCodeBlock.formats(this.children.head.domNode)[SyntaxCodeBlock.blotName];
+    const language = SyntaxCodeBlock.formats(this.children.head.domNode)[
+      SyntaxCodeBlock.blotName
+    ];
     if (forced || this.forceNext || this.cachedText !== text) {
       if (text.trim().length > 0 || this.cachedText == null) {
         const oldDelta = this.children.reduce((delta, child) => {
@@ -226,20 +225,17 @@ class SyntaxCodeBlockContainer extends CodeBlockContainer {
   }
 
   optimize(context) {
-    const formats = this.getFormats()
-    const { row, cell, rowspan, colspan } = formats
-    if (
-      formats[IN_LIST] &&
-      !(this.parent instanceof ListBlockWrapper)
-    ) {
+    const formats = this.getFormats();
+    const { row, cell, rowspan, colspan } = formats;
+    if (formats[IN_LIST] && !(this.parent instanceof ListBlockWrapper)) {
       this.wrap(ListBlockWrapper.blotName, {
         row,
         cell,
         colspan,
         rowspan,
         list: 'none',
-        [WRAPPER_INDENT]: formats[WRAPPER_INDENT]
-      })
+        [WRAPPER_INDENT]: formats[WRAPPER_INDENT],
+      });
     }
 
     super.optimize(context);
@@ -248,7 +244,9 @@ class SyntaxCodeBlockContainer extends CodeBlockContainer {
       this.children.head != null &&
       this.uiNode != null
     ) {
-      const language = SyntaxCodeBlock.formats(this.children.head.domNode)[SyntaxCodeBlock.blotName];
+      const language = SyntaxCodeBlock.formats(this.children.head.domNode)[
+        SyntaxCodeBlock.blotName
+      ];
       if (language !== this.uiNode.value) {
         this.uiNode.value = language;
       }
@@ -256,15 +254,16 @@ class SyntaxCodeBlockContainer extends CodeBlockContainer {
   }
 
   getFormats() {
-    const formats = {}
+    const formats = {};
     return CELL_ATTRIBUTES.concat(CELL_IDENTITY_KEYS)
       .concat([IN_LIST, WRAPPER_INDENT])
-      .reduce((formats, attribute) => {
+      .reduce((result, attribute) => {
         if (this.domNode.hasAttribute(`data-${attribute}`)) {
-          formats[attribute] = this.domNode.getAttribute(`data-${attribute}`) || undefined
+          result[attribute] =
+            this.domNode.getAttribute(`data-${attribute}`) || undefined;
         }
-        return formats
-      }, formats)
+        return result;
+      }, formats);
   }
 }
 SyntaxCodeBlockContainer.allowedChildren = [SyntaxCodeBlock];
@@ -276,6 +275,7 @@ class Syntax extends Module {
     Quill.register(CodeToken, true);
     Quill.register(SyntaxCodeBlock, true);
     Quill.register(SyntaxCodeBlockContainer, true);
+    ListBlockWrapper.addAllowChildren(SyntaxCodeBlockContainer);
   }
 
   constructor(quill, options) {
@@ -312,7 +312,9 @@ class Syntax extends Module {
       if (blot.uiNode == null) {
         blot.attachUI(select);
         if (blot.children.head) {
-          select.value = SyntaxCodeBlock.formats(blot.children.head.domNode)[SyntaxCodeBlock.blotName];
+          select.value = SyntaxCodeBlock.formats(blot.children.head.domNode)[
+            SyntaxCodeBlock.blotName
+          ];
         }
       }
     });
