@@ -11,3 +11,4 @@ const BlockIdentityAttribute = new Attributor(
 );
 
 export default BlockIdentityAttribute;
+export const BlockIdentityAttributeOptions = { enabled: true };

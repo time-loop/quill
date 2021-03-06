@@ -1,7 +1,6 @@
 import Delta from 'quill-delta';
 import * as Parchment from 'parchment';
 import extend from 'extend';
-// eslint-disable-next-line
 import Editor from './editor';
 import Emitter from './emitter';
 import Module from './module';
@@ -9,6 +8,7 @@ import Selection, { Range } from './selection';
 import instances from './instances';
 import logger from './logger';
 import Theme from './theme';
+import { BlockIdentityAttributeOptions } from '../formats/block-id';
 
 const debug = logger('quill');
 
@@ -63,7 +63,7 @@ class Quill {
   }
 
   static enableBlockIdMode(enable = true) {
-    Quill.enabledBlockId = enable;
+    BlockIdentityAttributeOptions.enabled = enable;
   }
 
   constructor(container, options = {}) {
@@ -465,8 +465,6 @@ Quill.imports = {
   'core/module': Module,
   'core/theme': Theme,
 };
-
-Quill.enabledBlockId = true;
 
 function expandConfig(container, userConfig) {
   userConfig = extend(

@@ -7,6 +7,7 @@ import { EmbedBlot, Scope, TextBlot } from 'parchment';
 import Quill from '../core/quill';
 import logger from '../core/logger';
 import Module from '../core/module';
+import { BlockIdentityAttributeOptions } from '../formats/block-id';
 
 const debug = logger('quill:keyboard');
 
@@ -284,7 +285,9 @@ class Keyboard extends Module {
       .retain(context.line.length() - context.offset - 1)
       .retain(1, {
         ...lineFormats,
-        'block-id': Quill.enabledBlockId ? `block-${uuid()}` : null,
+        'block-id': BlockIdentityAttributeOptions.enabled
+          ? `block-${uuid()}`
+          : null,
       });
     this.quill.updateContents(delta, Quill.sources.USER);
     this.quill.setSelection(range.index + 1, Quill.sources.SILENT);

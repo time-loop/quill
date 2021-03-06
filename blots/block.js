@@ -11,9 +11,9 @@ import {
 import Break from './break';
 import Inline from './inline';
 import TextBlot from './text';
-import BlockIdentityAttribute from '../formats/block-id';
-// eslint-disable-next-line
-import Quill from '../core/quill';
+import BlockIdentityAttribute, {
+  BlockIdentityAttributeOptions,
+} from '../formats/block-id';
 
 const NEWLINE_LENGTH = 1;
 
@@ -103,7 +103,7 @@ class Block extends BlockBlot {
     this.cache = {};
     const curFormats = this.formats();
     if (
-      Quill.enabledBlockId &&
+      BlockIdentityAttributeOptions.enabled &&
       (!curFormats || !curFormats[BlockIdentityAttribute.attrName])
     ) {
       this.format(BlockIdentityAttribute.attrName, `block-${uuid()}`);
