@@ -151,7 +151,7 @@ const baseConfig = {
 module.exports = env => {
   if (env && env.minimize) {
     const { devServer, ...prodConfig } = baseConfig;
-    // delete prodConfig.entry['unit.js'];
+    delete prodConfig.entry['unit.js'];
     return [
       {
         ...prodConfig,
