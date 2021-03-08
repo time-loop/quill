@@ -50,7 +50,6 @@ const jsRules = {
                   'last 2 iOS major versions',
                   'last 2 ChromeAndroid major versions',
                 ],
-                ie: '11',
               },
             },
           ],
@@ -87,9 +86,9 @@ const tsRules = {
       options: {
         compilerOptions: {
           declaration: false,
-          module: 'commonjs',
+          module: 'es6',
           sourceMap: true,
-          target: 'es5',
+          target: 'es6',
         },
         transpileOnly: true,
       },
