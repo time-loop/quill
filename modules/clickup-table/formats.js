@@ -257,7 +257,6 @@ class TableCell extends Container {
 
   optimize(context) {
     const curRowId = this.domNode.getAttribute('data-row');
-
     if (
       this.statics.requiredContainer &&
       !(this.parent instanceof this.statics.requiredContainer)
@@ -277,11 +276,10 @@ class TableCell extends Container {
       } else if (child.statics.blotName === 'list-container') {
         childCellId = childFormats.cell;
       }
-
       let nextCellId;
-      if (child.statics.blotName === 'table-cell-line') {
+      if (child.next.statics.blotName === 'table-cell-line') {
         nextCellId = nextFormats['table-cell-line'].cell;
-      } else if (child.statics.blotName === 'list-container') {
+      } else if (child.next.statics.blotName === 'list-container') {
         nextCellId = nextFormats.cell;
       }
 
@@ -1407,12 +1405,6 @@ class ListBlockWrapper extends Container {
   }
 
   optimize(context) {
-    // if has different children, unwrap.
-    const hasDifferentChildren = this.children
-      .map(
-        child => child.statics.blotName === this.children.head.statics.blotName,
-      )
-      .some(item => !item);
     const { row, cell, rowspan, colspan } = this.listFormats();
     if (
       this.statics.requiredContainer &&
@@ -1424,8 +1416,6 @@ class ListBlockWrapper extends Container {
         colspan,
         rowspan,
       });
-    } else if (hasDifferentChildren) {
-      this.unwrap();
     }
 
     // set own visibility
@@ -1444,6 +1434,20 @@ class ListBlockWrapper extends Container {
     });
 
     super.optimize(context);
+    this.children.forEach(child => {
+      if (child.next == null) return;
+
+      if (child.statics.blotName !== child.next.statics.blotName) {
+        const next = this.splitAfter(child);
+        if (next) {
+          next.optimize();
+        }
+        // We might be able to merge with prev now
+        if (this.prev) {
+          this.prev.optimize();
+        }
+      }
+    });
   }
 
   getIndent() {
