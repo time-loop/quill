@@ -88,10 +88,6 @@ class TableCellLine extends Block {
       if (value) {
         if (typeof value === 'object') {
           this.replaceWith(TableCellLine.blotName, value);
-          const parentCellId = this.parent.formats().cell;
-          if (parentCellId !== value.cell) {
-            this.parent.unwrap();
-          }
         } else {
           super.format(name, {
             row,
@@ -105,6 +101,10 @@ class TableCellLine extends Block {
       }
     } else {
       super.format(name, value);
+    }
+
+    if (this.parent instanceof Container) {
+      this.parent.unwrap();
     }
   }
 
@@ -1024,6 +1024,9 @@ class ListItem extends Block {
       }
     } else {
       super.format(name, value);
+    }
+    if (this.parent instanceof Container) {
+      this.parent.unwrap();
     }
   }
 
