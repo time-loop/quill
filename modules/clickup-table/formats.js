@@ -13,8 +13,8 @@ const COL_DEFAULT = {
 const CELL_IDENTITY_KEYS = ['row', 'cell'];
 const CELL_ATTRIBUTES = ['rowspan', 'colspan'];
 const CELL_DEFAULT = {
-  rowspan: 1,
-  colspan: 1,
+  rowspan: '1',
+  colspan: '1',
 };
 
 const WIDE_TABLE_CLASS = 'clickup-table-view_wide';
@@ -87,17 +87,9 @@ class TableCellLine extends Block {
     } else if (name === 'table-cell-line') {
       if (value) {
         if (typeof value === 'object') {
-          this.replaceWith(TableCellLine.blotName, value);
-          const parentCellId = this.parent.formats().cell;
-          if (parentCellId !== value.cell) {
-            this.parent.unwrap();
-          }
-        } else {
-          super.format(name, {
-            row,
-            cell,
-            rowspan,
-            colspan,
+          // this.replaceWith(TableCellLine.blotName, value);
+          Object.keys(value).forEach(key => {
+            this.domNode.setAttribute(`data-${key}`, value[key]);
           });
         }
       } else {
@@ -267,30 +259,44 @@ class TableCell extends Container {
     }
     super.optimize(context);
     this.children.forEach(child => {
-      if (child.next == null) return;
       const childFormats = child.formats();
-      const nextFormats = child.next.formats();
+      const parentFormats = child.parent.formats();
       let childCellId;
+      let childRowId;
       if (child.statics.blotName === 'table-cell-line') {
         childCellId = childFormats['table-cell-line'].cell;
+        childRowId = childFormats['table-cell-line'].row;
       } else if (child.statics.blotName === 'list-container') {
         childCellId = childFormats.cell;
-      }
-      let nextCellId;
-      if (child.next.statics.blotName === 'table-cell-line') {
-        nextCellId = nextFormats['table-cell-line'].cell;
-      } else if (child.next.statics.blotName === 'list-container') {
-        nextCellId = nextFormats.cell;
+        childRowId = childFormats.row;
       }
 
-      if (childCellId !== nextCellId) {
-        const next = this.splitAfter(child);
-        if (next) {
-          next.optimize();
+      if (childCellId !== parentFormats.cell) {
+        const { parent, prev, next } = this;
+        const after = this.scroll.create(this.statics.blotName, {
+          row: childRowId,
+          cell: childCellId,
+          ...CELL_DEFAULT,
+        });
+
+        if (child.prev == null) {
+          this.children.forEach(childBlot => {
+            after.appendChild(childBlot);
+          });
+          this.remove();
+        } else {
+          const ref = child.prev;
+          while (ref.next != null) {
+            after.appendChild(ref.next);
+          }
         }
-        // We might be able to merge with prev now
-        if (this.prev) {
-          this.prev.optimize();
+
+        if (parent) {
+          parent.insertBefore(after, next || undefined);
+        }
+
+        if (prev) {
+          prev.optimize();
         }
       }
     });
@@ -367,17 +373,34 @@ class TableRow extends Container {
 
     super.optimize(context);
     this.children.forEach(child => {
-      if (child.next == null) return;
       const childFormats = child.formats();
-      const nextFormats = child.next.formats();
-      if (childFormats.row !== nextFormats.row) {
-        const next = this.splitAfter(child);
-        if (next) {
-          next.optimize();
+      const parentFormats = child.parent.formats();
+      if (childFormats.row !== parentFormats.row) {
+        const { parent, prev, next } = this;
+        const after = this.scroll.create(this.statics.blotName, {
+          row: childFormats.row,
+        });
+
+        if (child.prev == null) {
+          this.children.forEach(childBlot => {
+            after.appendChild(childBlot);
+          });
+          this.remove();
+        } else {
+          const ref = child.prev;
+          while (ref.next != null) {
+            after.appendChild(ref.next);
+          }
         }
-        // We might be able to merge with prev now
-        if (this.prev) {
-          this.prev.optimize();
+
+        if (parent) {
+          parent.insertBefore(after, next || undefined);
+        }
+
+        after.optimize();
+
+        if (prev) {
+          prev.optimize();
         }
       }
     });

@@ -92,7 +92,7 @@ class History extends Module {
   }
 }
 History.DEFAULTS = {
-  delay: 1000,
+  delay: 50,
   maxStack: 100,
   userOnly: false,
 };

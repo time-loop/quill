@@ -52,7 +52,7 @@ import SnowTheme from './themes/snow';
 
 Quill.register(
   {
-    'attributor': Attributor,
+    attributor: Attributor,
     'attributors/attribute/direction': DirectionAttribute,
     'attributors/attribute/void-detect': voidDetectAttribute,
     'attributors/attribute/block-id': BlockIdentityAttribute,

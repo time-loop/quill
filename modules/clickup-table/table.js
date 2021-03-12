@@ -215,7 +215,7 @@ class Table extends Module {
     quill.clipboard.addMatcher('th', matchTableHeader);
     quill.clipboard.addMatcher('table', matchTable);
 
-    this.listenBalanceCells();
+    // this.listenBalanceCells();
   }
 
   showTableTools(table, quill, options) {
